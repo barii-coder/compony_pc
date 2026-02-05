@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('messages', function (Blueprint $table) {
+            $table->id();
+            $table->string('user_id');
+            $table->string('code');
+            $table->string('text')->nullable();
+            $table->string('image_url')->nullable();
+            $table->string('type')->nullable();
+            $table->string('buyer_name')->nullable();
+            $table->string('question');
+            $table->string('group_id');
+            $table->string('active_group');
+            $table->string('chat_in_progress');
+            $table->timestamp('previous_updated_at')->nullable();
+            $table->string('final_price')->nullable();
+            $table->boolean('needs_follow_up')->default(false)->index();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('messages');
+    }
+};

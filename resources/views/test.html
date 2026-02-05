@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>نوتیفیکیشن سریع</title>
+</head>
+<body>
+<button id="notifyBtn">نمایش نوتیفیکیشن فوری</button>
+
+<script>
+    const button = document.getElementById('notifyBtn');
+
+    // درخواست اجازه یک بار هنگام بارگذاری
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+
+    button.addEventListener('click', () => {
+        if (Notification.permission === 'granted') {
+            new Notification("سلام!", {
+                body: "این نوتیفیکیشن بدون تاخیر نمایش داده شد.",
+            });
+        } else {
+            alert("ابتدا اجازه نوتیفیکیشن را بدهید!");
+        }
+    });
+</script>
+</body>
+</html>

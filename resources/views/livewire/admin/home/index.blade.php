@@ -1,4 +1,4 @@
-<div class="w-full" style="margin: 0 10px" wire:poll.1s>
+<div class="w-full" style="margin: 0 10px" wire:poll.100ms>
     <div style="width: 1px;height: 1px;background: #f00"></div>
     <div class="lightbox" wire:ignore>
         <span class="close">&times;</span>
@@ -133,17 +133,19 @@
                                     {{-- کامنت --}}
                                     @if($user->id == '1' or $user->id == '5')
                                         <input type="text"
-                                               wire:model.defer="comments.{{ $message->id }}"
+                                               wire:model="comments.{{ $message->id }}"
                                                dir="rtl"
                                                wire:keydown.enter="submit_comment({{ $message->id }})"
+                                               wire:ignore
                                                placeholder="کامنت"
                                                class="mt-1 w-[45%] float-right bg-gray-100 rounded px-1 py-0.5">
                                     @endif
                                     {{-- قیمت --}}
                                     <div class="flex mt-2 bg-gray-100 rounded overflow-hidden">
                                         <input type="text"
-                                               wire:model.defer="prices.{{ $message->id }}"
+                                               wire:model="prices.{{ $message->id }}"
                                                placeholder="قیمت"
+                                               wire:ignore
                                                wire:keydown.enter="submit_answer({{ $message->id }})"
                                                class="flex-1 bg-transparent px-1 py-0.5">
                                         <button
@@ -558,7 +560,7 @@
                         </div>
 
                         <span class="text-gray-500 text-[10px]">
-{{ $firstChat->updated_at->addMinutes(30)->format('H:i') }}
+{{ $firstChat->updated_at->format('H:i') }}
                     </span>
                     </div>
 
@@ -732,7 +734,7 @@
                                         '1','2','3','4','5','6','7','8','9','0',
                                         'A','B','C','D','E','F','G','H','I','J',
                                         'K','L','M','N','O','P','Q','R','S','T',
-                                        'U','V','W','X','Y','Z',')'
+                                        'U','V','W','X','Y','Z'
                                     ])
                                 )
                                     <input
@@ -805,15 +807,15 @@
         </div>
         <div id="chat-body">
             <div class="msg bot">
-                <input wire:model.defer="buser" type="checkbox"><span>مصرف کننده</span>
+                <input wire:model="buser" type="checkbox"><span>مصرف کننده</span>
                 <br>
-                <input wire:model.defer="dalal" type="checkbox"><span>دلال</span>
+                <input wire:model="dalal" type="checkbox"><span>دلال</span>
                 <br>
-                <input wire:model.defer="hamkar" type="checkbox"><span>همکار</span>
+                <input wire:model="hamkar" type="checkbox"><span>همکار</span>
                 <br>
-                <input wire:model.defer="tamirkar" type="checkbox"><span>تعمیر کار</span>
+                <input wire:model="tamirkar" type="checkbox"><span>تعمیر کار</span>
                 <br>
-                <input wire:model.defer="moshtaryg" type="checkbox"><span>مشتری جدید</span>
+                <input wire:model="moshtaryg" type="checkbox"><span>مشتری جدید</span>
                 <br>
                 <input class="p-1 text-right"  wire:model="buyer_name" style="border: 1px solid #aaa!important;" type="text" placeholder="نام فروشنده/توضیحات">
             </div>

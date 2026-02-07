@@ -254,8 +254,7 @@ class Index extends Component
             $this->checkbox = false;
         }
 
-        public
-        function submit_comment($message_id)
+        public function submit_comment($message_id)
         {
             $user = Auth::user();
             $this->checkAccess($user->id);
@@ -276,7 +275,11 @@ class Index extends Component
                 ]
             );
             $this->comments[$message_id] = null;
-            $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
+            $this->dispatch('answerSubmitted', [
+                'userId' => $user->id,
+                'message' => "پاسخ کاربر {$user->name} ثبت شد!"
+            ]);
+
         }
 
         public
@@ -611,6 +614,25 @@ class Index extends Component
                 'chat_in_progress' => 1,
                 'active_group' => '0',
             ]);
+
+            $answers = Answer::query()
+                ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
+                ->orderBy('message_id')
+                ->get();
+
+            $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);
+            $allMessages = Message::query()->orderBy('created_at', 'desc')->get();
+
+            $messages = $allMessages->where('chat_in_progress', '2');
+
+            $groups = $messages->groupBy('group_id');
+
+            $activeGroupIds = $allMessages->where('active_group', 1)->pluck('group_id')->unique();
+
+            $productsGrouped = $allMessages->whereIn('group_id', $activeGroupIds)
+                ->sortByDesc('updated_at')
+                ->groupBy('group_id');
+
         }
 
         public
@@ -700,8 +722,7 @@ class Index extends Component
         }
 
 
-        public
-        function render()
+        public function render()
         {
             $allMessages = Message::query()->orderBy('created_at', 'desc')->get();
 
@@ -712,7 +733,7 @@ class Index extends Component
             $activeGroupIds = $allMessages->where('active_group', 1)->pluck('group_id')->unique();
 
             $productsGrouped = $allMessages->whereIn('group_id', $activeGroupIds)
-                ->sortByDesc('created_at')
+                ->sortByDesc('updated_at')
                 ->groupBy('group_id');
 
             $wait_for_price = $allMessages->where('chat_in_progress', '3')->sortByDesc('updated_at');
@@ -725,7 +746,6 @@ class Index extends Component
                 ->get();
 
             $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);
-
             $codeCounts = $allMessages->pluck('code')->countBy()->toArray();
 
             $lastTimes = $allMessages->groupBy('code')->map(fn($msgs) => $msgs->first()->created_at->diffForHumans())->toArray();

@@ -60,8 +60,6 @@
 
         /* حباب پیام */
         .msg {
-            max-width: 75%;
-            padding: 8px 12px;
             margin-bottom: 8px;
             border-radius: 10px;
             line-height: 1.6;

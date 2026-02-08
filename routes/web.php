@@ -20,7 +20,6 @@ Route::post('/register', [AuthController::class, 'register']);
 // Dashboard
 Route::get('/dashboard', Index::class)->middleware('auth');
 
-
 // daii
 
 Route::get('test', \App\Livewire\TestForm::class)->name('test-form');

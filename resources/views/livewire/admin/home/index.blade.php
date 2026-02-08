@@ -1,4 +1,4 @@
-<div class="w-full" style="margin: 0 10px" wire:poll.100ms>
+<div class="w-full" style="margin: 0 10px" wire:poll.2000ms>
     <div style="width: 1px;height: 1px;background: #f00"></div>
 
     <div class="lightbox" wire:ignore>

@@ -5,6 +5,36 @@
     font-family: system-ui!important;
 }
 
+/* استایل اسکرول‌بار — فایرفاکس */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+/* استایل اسکرول‌بار — کروم، اج، سافاری */
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+*::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+*::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+}
+*::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+*::-webkit-scrollbar-thumb:active {
+    background: #475569;
+}
+*::-webkit-scrollbar-corner {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
 .middle {
     vertical-align: middle!important;
 }
@@ -61,8 +91,6 @@
 
 /* حباب پیام */
 .msg {
-    max-width: 75%;
-    padding: 8px 12px;
     margin-bottom: 8px;
     border-radius: 10px;
     line-height: 1.6;

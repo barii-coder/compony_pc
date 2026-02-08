@@ -1,7 +1,7 @@
 @props(['ended_chats'])
 
 <style>
-.dash-box-done { background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); overflow: hidden; }
+.dash-box-done { background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); overflow: scroll; }
 .dash-box-done .dash-header { background: linear-gradient(135deg, #047857 0%, #059669 100%); color: #fff; padding: 0.65rem 0.75rem; font-weight: 700; text-align: center; font-size: 0.9rem; border-radius: 1rem 1rem 0 0; }
 .dash-box-done .dash-card { border-radius: 0.75rem; padding: 0.5rem 0.6rem; margin-bottom: 0.5rem; border: 1px solid #e2e8f0; transition: box-shadow 0.2s; }
 .dash-box-done .dash-card.normal { background: #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
@@ -30,7 +30,9 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#475569" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
                         </button>
                         <button onclick="copyCompletedCodesOnly('{{ $groupId }}', this)" class="dash-btn-icon blue p-1 rounded-full" title="کپی فقط کدها">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                            </svg>
                         </button>
                         <button wire:click="toggleFollowUp('{{ $groupId }}')" class="dash-btn-follow">پیگیری</button>
                     </div>

@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Home;
 
 use App\Models\Answer;
 use App\Models\Message;
+use App\Events\AdminNotificationEvent;
 use App\Models\User;
 use http\Env\Request;
 use Illuminate\Support\Facades\Auth;
@@ -180,627 +181,628 @@ class Index extends Component
             if (!empty($selected)) {
                 $this->buyer_name = implode(' - ', $selected);
             }
+        }
+
+        $user = Auth::user();
+
+        $lines = explode("\n", $this->test);
+
+        // حذف خط‌های خالی (حتی اگه فقط اینتر یا فاصله باشه)
+        $lines = array_filter($lines, function ($line) {
+            return trim($line) !== '';
+        });
+
+        // اگه بعد از فیلتر چیزی نموند، کلاً ثبت نکن
+        if (count($lines) === 0) {
+            return;
+        }
+
+        $code = time() . '-' . rand(100000, 999999);
+
+        if ($this->checkbox == true) {
+            $check = '1';
+        } else {
+            $check = '2';
+        }
+
+        foreach ($lines as $line) {
+            if ($this->hasMoreThanThreePersianLetters($line)) {
+                $value = '1';
+            } else {
+                $value = '0';
+            }
+            $parts = preg_split('/\s+/', trim($line)); // جدا کردن با هر تعداد فاصله
+            if ($check == '1') {
+                $codePart = $parts[0]; // همون کد
+            } else {
+                $codePart = trim($line);
             }
 
-            $user = Auth::user();
+            $priceParts = array_slice($parts, 1); // همه چیز بعد از کد
 
-            $lines = explode("\n", $this->test);
+            $price = implode('-', $priceParts); // چسبوندن با خط تیره
+            $messageCode = explode(' ', $line);
+            $message = Message::create([
+                'user_id' => $user->id,
+                'code' => $codePart,
+                'active_group' => 1,
+                'question' => $value,
+                'type' => 'text',
+                'buyer_name' => $this->buyer_name,
+                'group_id' => $code,
+                'chat_in_progress' => "$check",
+            ]);
 
-            // حذف خط‌های خالی (حتی اگه فقط اینتر یا فاصله باشه)
-            $lines = array_filter($lines, function ($line) {
-                return trim($line) !== '';
-            });
-
-            // اگه بعد از فیلتر چیزی نموند، کلاً ثبت نکن
-            if (count($lines) === 0) {
-                return;
+            if ($check == 1 && empty($priceParts)) {
+                $message->delete();
+                continue; // بره خط بعدی
             }
-
-            $code = time() . '-' . rand(100000, 999999);
 
             if ($this->checkbox == true) {
-                $check = '1';
-            } else {
-                $check = '2';
-            }
-
-            foreach ($lines as $line) {
-                if ($this->hasMoreThanThreePersianLetters($line)) {
-                    $value = '1';
-                } else {
-                    $value = '0';
-                }
-                $parts = preg_split('/\s+/', trim($line)); // جدا کردن با هر تعداد فاصله
-                if ($check == '1') {
-                    $codePart = $parts[0]; // همون کد
-                } else {
-                    $codePart = trim($line);
-                }
-
-                $priceParts = array_slice($parts, 1); // همه چیز بعد از کد
-
-                $price = implode('-', $priceParts); // چسبوندن با خط تیره
-                $messageCode = explode(' ', $line);
-                $message = Message::create([
-                    'user_id' => $user->id,
-                    'code' => $codePart,
-                    'active_group' => 1,
-                    'question' => $value,
-                    'type' => 'text',
-                    'buyer_name' => $this->buyer_name,
-                    'group_id' => $code,
-                    'chat_in_progress' => "$check",
-                ]);
-
-                if ($check == 1 && empty($priceParts)) {
-                    $message->delete();
-                    continue; // بره خط بعدی
-                }
-
-                if ($this->checkbox == true) {
-                    Answer::query()->create([
-                        'message_id' => $message->id,
-                        'user_id' => $user->id,
-                        'respondent_by_code' => '1',
-                        'price' => $price,
-                    ]);
-                }
-            }
-
-            $this->messageCounts = array_count_values(Message::pluck('code')->toArray());
-
-            $this->test = "";
-            $this->reset();
-            $this->checkbox = false;
-        }
-
-        public function submit_comment($message_id)
-        {
-            $user = Auth::user();
-            $this->checkAccess($user->id);
-            Answer::query()->updateOrCreate(
-                [
-                    'message_id' => $message_id
-                ], [
-                'user_id' => $user->id,
-                'price' => '',
-                'comment' => $this->comments[$message_id],
-                'message_id' => $message_id,
-                'respondent_by_code' => '1'
-            ]);
-            Message::query()->where('id', $message_id)->update(
-                [
-                    'chat_in_progress' => '1',
-                    'active_group' => '0',
-                ]
-            );
-            $this->comments[$message_id] = null;
-            $this->dispatch('answerSubmitted', [
-                'userId' => $user->id,
-                'message' => "پاسخ کاربر {$user->name} ثبت شد!"
-            ]);
-
-        }
-
-        public
-        function submit_answer($id)
-        {
-            $user = Auth::user();
-            $this->checkAccess($user->id);
-            $this->validate();
-
-            $a = Answer::query()->where('message_id', $id)->get();
-
-            $b = Message::query()->where('id', $id)->get();
-            foreach ($b as $c) {
-                $name = User::query()->where('id', $c->user_id)->first();
-            }
-
-            if ($a->isEmpty()) {
                 Answer::query()->create([
+                    'message_id' => $message->id,
                     'user_id' => $user->id,
-                    'message_id' => $id,
-                    'price' => $this->prices[$id] ?? null,
-                    'respondent_by_code' => '',
-                ]);
-
-                Message::query()->where('id', $id)
-                    ->update(['chat_in_progress' => '1', 'active_group' => '0']);
-
-                $this->prices = [];
-            } else {
-
-                Answer::query()->where('message_id', $id)->update([
-                    'price' => $this->prices[$id] ?? null,
-                    'respondent_by_code' => '0',
-                ]);
-
-                Message::query()->where('id', $id)
-                    ->update(['chat_in_progress' => '1', 'active_group' => '0']);
-
-                $this->prices = [];
-            }
-            $this->dispatch('answer-submitted', message: " پاسخ کاربر $name->name ثبت شد! ");
-        }
-
-        public
-        function submit_answer_on3($id)
-        {
-            $user = Auth::user();
-            $this->validate();
-
-            $a = Answer::query()->where('message_id', $id)->get();
-
-            if ($a->isEmpty()) {
-                Answer::query()->create([
-                    'user_id' => $user->id,
-                    'message_id' => $id,
-                    'price' => $this->prices[$id] ?? null,
-                    'respondent_by_code' => '0',
-                ]);
-
-                Message::query()->where('id', $id)
-                    ->update(['chat_in_progress' => '1', 'active_group' => '0']);
-
-                $this->prices = [];
-            } else {
-                Answer::query()->where('message_id', $id)->update([
-                    'price' => $this->prices[$id] ?? null,
-                    'respondent_by_code' => '0',
-                ]);
-
-                Message::query()->where('id', $id)
-                    ->update(['chat_in_progress' => '1', 'active_group' => '0']);
-
-                $this->prices = [];
-            }
-            $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
-        }
-
-        public
-        function toggleCode($code, $messageId)
-        {
-            $key = $messageId . ':' . $code;
-
-            if (in_array($key, $this->selectedCodes)) {
-                $this->selectedCodes = array_values(
-                    array_diff($this->selectedCodes, [$key])
-                );
-            } else {
-                $this->selectedCodes[] = $key;
-            }
-        }
-
-        public
-        function submitSelectedCodes($messageId)
-        {
-            $user = Auth::user();
-            $this->checkAccess($user->id);
-
-            // فقط کدهای مربوط به همین پیام
-            $codes = [];
-
-            foreach ($this->selectedCodes as $item) {
-                [$msgId, $code] = explode(':', $item);
-
-                if ($msgId == $messageId) {
-                    $codes[] = $code;
-                }
-            }
-
-            if (count($codes) === 0) {
-                return;
-            }
-
-            $finalPrice = implode('-', $codes);
-            $comment = $this->comments[$messageId] ?? null;
-
-            Answer::query()->updateOrCreate(
-                ['message_id' => $messageId],
-                [
-                    'user_id' => $user->id,
-                    'price' => $finalPrice,
-                    'comment' => $comment,
                     'respondent_by_code' => '1',
-                ]
-            );
-
-            Message::query()->where('id', $messageId)
-                ->update(['chat_in_progress' => '1', 'active_group' => '1']);
-
-            // پاک کردن انتخاب‌ها و کامنت
-            $this->selectedCodes = [];
-            $this->comments[$messageId] = null;
-            $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
-        }
-
-        public
-        function deleteGroup($group_id)
-        {
-            Message::query()->where('group_id', $group_id)->delete();
-        }
-
-
-        // 🔹 متد جدید برای ذخیره دکمه + کامنت
-        public
-        function codeAnswerWithComment($chat_code, $messageId)
-        {
-            $user = Auth::user();
-            $this->checkAccess($user->id);
-
-            // بررسی اینکه فقط وقتی کد حروف است، کامنت ثبت شود
-            $comment = null;
-            if (!is_numeric($chat_code)) {
-                $comment = $this->comments[$messageId] ?? null;
+                    'price' => $price,
+                ]);
             }
-
-            Answer::query()->updateOrCreate(
-                ['message_id' => $messageId],
-                [
-                    'user_id' => $user->id,
-                    'price' => $chat_code,
-                    'comment' => $comment,
-                    'respondent_by_code' => '1',
-                ]
-            );
-
-            Message::query()->where('id', $messageId)
-                ->update(['chat_in_progress' => '1', 'active_group' => '1']);
-
-            // پاک کردن input کامنت فقط وقتی ثبت شد
-            if ($comment) {
-                $this->comments[$messageId] = null;
-            }
-            $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
         }
 
+        $this->messageCounts = array_count_values(Message::pluck('code')->toArray());
+        event(new AdminNotificationEvent('یه سفارش جدید ثبت شد 🚀'));
 
-        // بقیه متدها همونطوری که بود
-        public
-        function save_for_ad_price($messageId)
-        {
-            Message::query()->where('id', $messageId)->update([
-                'chat_in_progress' => '3',
-                'text' => null,
-            ]);
-        }
+        $this->test = "";
+        $this->reset();
+        $this->checkbox = false;
+    }
 
-        public
-        function check_answer($id)
-        {
-            $answer = Answer::query()->where('message_id', $id)->first();
-
-            Message::query()->where('id', $id)->update([
-                'chat_in_progress' => '0',
+    public function submit_comment($message_id)
+    {
+        $user = Auth::user();
+        $this->checkAccess($user->id);
+        Answer::query()->updateOrCreate(
+            [
+                'message_id' => $message_id
+            ], [
+            'user_id' => $user->id,
+            'price' => '',
+            'comment' => $this->comments[$message_id],
+            'message_id' => $message_id,
+            'respondent_by_code' => '1'
+        ]);
+        Message::query()->where('id', $message_id)->update(
+            [
+                'chat_in_progress' => '1',
                 'active_group' => '0',
-                'final_price' => $answer->price,
-                'updated_at' => now(),
-            ]);
+            ]
+        );
+        $this->comments[$message_id] = null;
+        $this->dispatch('answerSubmitted', [
+            'userId' => $user->id,
+            'message' => "پاسخ کاربر {$user->name} ثبت شد!"
+        ]);
+
+    }
+
+    public
+    function submit_answer($id)
+    {
+        $user = Auth::user();
+        $this->checkAccess($user->id);
+        $this->validate();
+
+        $a = Answer::query()->where('message_id', $id)->get();
+
+        $b = Message::query()->where('id', $id)->get();
+        foreach ($b as $c) {
+            $name = User::query()->where('id', $c->user_id)->first();
         }
 
-        public
-        function code_answer($chat_code, $id)
-        {
-            $user = Auth::user();
-            $this->checkAccess($user->id);
-
-            $comment = $this->comments[$id] ?? null;
-
-            Answer::query()->updateOrCreate(
-                [
-                    'message_id' => $id,
-                ],
-                [
-                    'user_id' => $user->id,
-                    'message_id' => $id,
-                    'price' => $chat_code,
-                    'comment' => $comment,
-                    'respondent_by_code' => '1',
-                ]);
+        if ($a->isEmpty()) {
+            Answer::query()->create([
+                'user_id' => $user->id,
+                'message_id' => $id,
+                'price' => $this->prices[$id] ?? null,
+                'respondent_by_code' => '',
+            ]);
 
             Message::query()->where('id', $id)
                 ->update(['chat_in_progress' => '1', 'active_group' => '0']);
-            $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
-        }
 
-        public
-        function code_answer_update($chat_code, $id)
-        {
-            if ($chat_code == 'n') {
-                $chat_code = 'نیاز به برسی دوباره';
-            }
+            $this->prices = [];
+        } else {
 
             Answer::query()->where('message_id', $id)->update([
-                'price' => $chat_code,
-                'respondent_by_code' => '1',
-            ]);
-
-            Message::query()->where('id', $id)
-                ->update(['chat_in_progress' => '1', 'active_group' => '0']);
-        }
-
-        public
-        function i_had_it($messageId)
-        {
-            $answer = Answer::where('message_id', $messageId)->first();
-            $user = Auth::user();
-
-            $answer->update([
-                'respondent_profile_image_path' => $user->profile_image_path,
-                'respondent_id' => $user->id,
-            ]);
-
-            Message::query()->where('id', $messageId)
-                ->update([
-                    'chat_in_progress' => '1',
-                ]);
-        }
-
-        public
-        function back($group_id)
-        {
-            Message::query()->where('group_id', $group_id)
-                ->update([
-                    'chat_in_progress' => '2',
-                    'active_group' => '1',
-                ]);
-        }
-
-        public
-        function delete_message($messageId)
-        {
-            Answer::query()->where('message_id', $messageId)->delete();
-            Message::query()->where('id', $messageId)->delete();
-        }
-
-        public
-        function price_is_unavailable($messageId)
-        {
-            $answer = Answer::query()->where('message_id', $messageId)->first();
-
-            $answer->update([
-                'price' => 'قیمت موجود نیست',
+                'price' => $this->prices[$id] ?? null,
                 'respondent_by_code' => '0',
             ]);
 
-            Message::query()->where('id', $messageId)
+            Message::query()->where('id', $id)
                 ->update(['chat_in_progress' => '1', 'active_group' => '0']);
-        }
 
-        public
-        function its_unavailable_on_column_2($messageId)
-        {
-            Message::query()->where('id', $messageId)->update([
-                'chat_in_progress' => '3',
-                'text' => 'قیمت موجود نمیباشد',
+            $this->prices = [];
+        }
+        $this->dispatch('answer-submitted', message: " پاسخ کاربر $name->name ثبت شد! ");
+    }
+
+    public
+    function submit_answer_on3($id)
+    {
+        $user = Auth::user();
+        $this->validate();
+
+        $a = Answer::query()->where('message_id', $id)->get();
+
+        if ($a->isEmpty()) {
+            Answer::query()->create([
+                'user_id' => $user->id,
+                'message_id' => $id,
+                'price' => $this->prices[$id] ?? null,
+                'respondent_by_code' => '0',
             ]);
+
+            Message::query()->where('id', $id)
+                ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+
+            $this->prices = [];
+        } else {
+            Answer::query()->where('message_id', $id)->update([
+                'price' => $this->prices[$id] ?? null,
+                'respondent_by_code' => '0',
+            ]);
+
+            Message::query()->where('id', $id)
+                ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+
+            $this->prices = [];
+        }
+        $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
+    }
+
+    public
+    function toggleCode($code, $messageId)
+    {
+        $key = $messageId . ':' . $code;
+
+        if (in_array($key, $this->selectedCodes)) {
+            $this->selectedCodes = array_values(
+                array_diff($this->selectedCodes, [$key])
+            );
+        } else {
+            $this->selectedCodes[] = $key;
+        }
+    }
+
+    public
+    function submitSelectedCodes($messageId)
+    {
+        $user = Auth::user();
+        $this->checkAccess($user->id);
+
+        // فقط کدهای مربوط به همین پیام
+        $codes = [];
+
+        foreach ($this->selectedCodes as $item) {
+            [$msgId, $code] = explode(':', $item);
+
+            if ($msgId == $messageId) {
+                $codes[] = $code;
+            }
         }
 
-        public
-        function editPriceOnSoraats($formData, $group_id)
-        {
-            $user = Auth::user();
-            foreach ($formData as $key => $value) {
+        if (count($codes) === 0) {
+            return;
+        }
 
-                if (!str_starts_with($key, 'price.')) {
-                    continue;
-                }
+        $finalPrice = implode('-', $codes);
+        $comment = $this->comments[$messageId] ?? null;
 
-                $messageId = str_replace('price.', '', $key);
+        Answer::query()->updateOrCreate(
+            ['message_id' => $messageId],
+            [
+                'user_id' => $user->id,
+                'price' => $finalPrice,
+                'comment' => $comment,
+                'respondent_by_code' => '1',
+            ]
+        );
 
-                $price = trim($value);
+        Message::query()->where('id', $messageId)
+            ->update(['chat_in_progress' => '1', 'active_group' => '1']);
 
-                if ($price === '') {
-                    continue;
-                }
+        // پاک کردن انتخاب‌ها و کامنت
+        $this->selectedCodes = [];
+        $this->comments[$messageId] = null;
+        $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
+    }
 
-                Answer::query()->updateOrCreate(
-                    ['message_id' => $messageId],
-                    [
-                        'user_id' => $user->id,
-                        'price' => $price,
-                        'respondent_by_code' => 0, // چون دستی وارد شده
-                    ]
-                );
+    public
+    function deleteGroup($group_id)
+    {
+        Message::query()->where('group_id', $group_id)->delete();
+    }
 
-                Message::where('id', $messageId)->update([
-                    'chat_in_progress' => 1,
-                    'active_group' => '0',
-                    'final_price' => $price,
-                ]);
+
+    // 🔹 متد جدید برای ذخیره دکمه + کامنت
+    public
+    function codeAnswerWithComment($chat_code, $messageId)
+    {
+        $user = Auth::user();
+        $this->checkAccess($user->id);
+
+        // بررسی اینکه فقط وقتی کد حروف است، کامنت ثبت شود
+        $comment = null;
+        if (!is_numeric($chat_code)) {
+            $comment = $this->comments[$messageId] ?? null;
+        }
+
+        Answer::query()->updateOrCreate(
+            ['message_id' => $messageId],
+            [
+                'user_id' => $user->id,
+                'price' => $chat_code,
+                'comment' => $comment,
+                'respondent_by_code' => '1',
+            ]
+        );
+
+        Message::query()->where('id', $messageId)
+            ->update(['chat_in_progress' => '1', 'active_group' => '1']);
+
+        // پاک کردن input کامنت فقط وقتی ثبت شد
+        if ($comment) {
+            $this->comments[$messageId] = null;
+        }
+        $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
+    }
+
+
+    // بقیه متدها همونطوری که بود
+    public
+    function save_for_ad_price($messageId)
+    {
+        Message::query()->where('id', $messageId)->update([
+            'chat_in_progress' => '3',
+            'text' => null,
+        ]);
+    }
+
+    public
+    function check_answer($id)
+    {
+        $answer = Answer::query()->where('message_id', $id)->first();
+
+        Message::query()->where('id', $id)->update([
+            'chat_in_progress' => '0',
+            'active_group' => '0',
+            'final_price' => $answer->price,
+            'updated_at' => now(),
+        ]);
+    }
+
+    public
+    function code_answer($chat_code, $id)
+    {
+        $user = Auth::user();
+        $this->checkAccess($user->id);
+
+        $comment = $this->comments[$id] ?? null;
+
+        Answer::query()->updateOrCreate(
+            [
+                'message_id' => $id,
+            ],
+            [
+                'user_id' => $user->id,
+                'message_id' => $id,
+                'price' => $chat_code,
+                'comment' => $comment,
+                'respondent_by_code' => '1',
+            ]);
+
+        Message::query()->where('id', $id)
+            ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+        $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
+    }
+
+    public
+    function code_answer_update($chat_code, $id)
+    {
+        if ($chat_code == 'n') {
+            $chat_code = 'نیاز به برسی دوباره';
+        }
+
+        Answer::query()->where('message_id', $id)->update([
+            'price' => $chat_code,
+            'respondent_by_code' => '1',
+        ]);
+
+        Message::query()->where('id', $id)
+            ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+    }
+
+    public
+    function i_had_it($messageId)
+    {
+        $answer = Answer::where('message_id', $messageId)->first();
+        $user = Auth::user();
+
+        $answer->update([
+            'respondent_profile_image_path' => $user->profile_image_path,
+            'respondent_id' => $user->id,
+        ]);
+
+        Message::query()->where('id', $messageId)
+            ->update([
+                'chat_in_progress' => '1',
+            ]);
+    }
+
+    public
+    function back($group_id)
+    {
+        Message::query()->where('group_id', $group_id)
+            ->update([
+                'chat_in_progress' => '2',
+                'active_group' => '1',
+            ]);
+    }
+
+    public
+    function delete_message($messageId)
+    {
+        Answer::query()->where('message_id', $messageId)->delete();
+        Message::query()->where('id', $messageId)->delete();
+    }
+
+    public
+    function price_is_unavailable($messageId)
+    {
+        $answer = Answer::query()->where('message_id', $messageId)->first();
+
+        $answer->update([
+            'price' => 'قیمت موجود نیست',
+            'respondent_by_code' => '0',
+        ]);
+
+        Message::query()->where('id', $messageId)
+            ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+    }
+
+    public
+    function its_unavailable_on_column_2($messageId)
+    {
+        Message::query()->where('id', $messageId)->update([
+            'chat_in_progress' => '3',
+            'text' => 'قیمت موجود نمیباشد',
+        ]);
+    }
+
+    public
+    function editPriceOnSoraats($formData, $group_id)
+    {
+        $user = Auth::user();
+        foreach ($formData as $key => $value) {
+
+            if (!str_starts_with($key, 'price.')) {
+                continue;
             }
 
-            Message::where('group_id', $group_id)->update([
+            $messageId = str_replace('price.', '', $key);
+
+            $price = trim($value);
+
+            if ($price === '') {
+                continue;
+            }
+
+            Answer::query()->updateOrCreate(
+                ['message_id' => $messageId],
+                [
+                    'user_id' => $user->id,
+                    'price' => $price,
+                    'respondent_by_code' => 0, // چون دستی وارد شده
+                ]
+            );
+
+            Message::where('id', $messageId)->update([
                 'chat_in_progress' => 1,
                 'active_group' => '0',
+                'final_price' => $price,
             ]);
-
-            $answers = Answer::query()
-                ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
-                ->orderBy('message_id')
-                ->get();
-
-            $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);
-            $allMessages = Message::query()->orderBy('created_at', 'desc')->get();
-
-            $messages = $allMessages->where('chat_in_progress', '2');
-
-            $groups = $messages->groupBy('group_id');
-
-            $activeGroupIds = $allMessages->where('active_group', 1)->pluck('group_id')->unique();
-
-            $productsGrouped = $allMessages->whereIn('group_id', $activeGroupIds)
-                ->sortByDesc('updated_at')
-                ->groupBy('group_id');
-
         }
 
-        public
-        function checkAll($group_id)
-        {
-            $messages = Message::query()->where('group_id', $group_id)->get();
-            foreach ($messages as $message) {
-                foreach ($message->answers as $answer) {
-                    $message->update(['chat_in_progress' => '0', 'active_group' => '0', 'final_price' => $answer->price]);
-                }
-            }
-        }
+        Message::where('group_id', $group_id)->update([
+            'chat_in_progress' => 1,
+            'active_group' => '0',
+        ]);
 
-        public
-        function handlePaste($data)
-        {
-            $user = Auth::user();
+        $answers = Answer::query()
+            ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
+            ->orderBy('message_id')
+            ->get();
 
-            $text = trim($data['text'] ?? '');
-            $base64Image = $data['image'] ?? null;
+        $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);
+        $allMessages = Message::query()->orderBy('created_at', 'desc')->get();
 
-            $imagePath = null;
+        $messages = $allMessages->where('chat_in_progress', '2');
 
-            // 🔹 تبدیل Base64 به فایل
-            if ($base64Image) {
-                preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type);
+        $groups = $messages->groupBy('group_id');
 
-                $image = substr($base64Image, strpos($base64Image, ',') + 1);
-                $image = base64_decode($image);
+        $activeGroupIds = $allMessages->where('active_group', 1)->pluck('group_id')->unique();
 
-                $extension = strtolower($type[1] ?? 'png');
-                $fileName = 'chat_' . Str::random(10) . '.' . $extension;
-
-                Storage::disk('public')->put("chat-images/$fileName", $image);
-
-                $imagePath = "chat-images/$fileName";
-            }
-
-            // اگر نه متن بود نه عکس → هیچ کاری نکن
-            if (!$text && !$imagePath) {
-                return;
-            }
-
-            $groupId = time() . '-' . rand(100000, 999999);
-
-            Message::create([
-                'user_id' => $user->id,
-                'code' => $text ?: '📷 تصویر ارسال شد',
-                'image_path' => $imagePath,
-                'active_group' => 1,
-                'question' => $this->hasMoreThanThreePersianLetters($text) ? '1' : '0',
-                'group_id' => $groupId,
-                'chat_in_progress' => '2',
-            ]);
-
-            $this->test = ''; // خالی شدن textarea
-        }
-
-        public
-        function toggleFollowUp($groupId)
-        {
-            $user = Auth::user();
-            $this->checkAccess($user->id);
-
-            $message = Message::where('group_id', $groupId)->first();
-
-            if (!$message) {
-                return;
-            }
-
-            if ($message->needs_follow_up) {
-                // 🔴 خاموش کردن پیگیری → برگردوندن زمان قبلی
-                Message::withoutTimestamps(function () use ($message) {
-                    $message->update([
-                        'needs_follow_up' => false,
-                        'updated_at' => $message->previous_updated_at, // برگرد به جای قبلی
-                        'previous_updated_at' => null,
-                    ]);
-                });
-
-            } else {
-                // 🟢 روشن کردن پیگیری → ذخیره زمان قبلی + بیاد بالا
-                $message->previous_updated_at = $message->updated_at;
-                $message->needs_follow_up = true;
-                $message->save(); // اینجا عمداً updated_at جدید می‌گیره
-            }
-        }
-
-
-        public function render()
-        {
-            $allMessages = Message::query()->orderBy('created_at', 'desc')->get();
-
-            $messages = $allMessages->where('chat_in_progress', '2');
-
-            $groups = $messages->groupBy('group_id');
-
-            $activeGroupIds = $allMessages->where('active_group', 1)->pluck('group_id')->unique();
-
-            $productsGrouped = $allMessages->whereIn('group_id', $activeGroupIds)
-                ->sortByDesc('updated_at')
-                ->groupBy('group_id');
-
-            $wait_for_price = $allMessages->where('chat_in_progress', '3')->sortByDesc('updated_at');
-
-            $ended_chats = $allMessages->where('chat_in_progress', '0')->sortByDesc('updated_at');
-
-            $answers = Answer::query()
-                ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
-                ->orderBy('message_id')
-                ->get();
-
-            $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);
-            $codeCounts = $allMessages->pluck('code')->countBy()->toArray();
-
-            $lastTimes = $allMessages->groupBy('code')->map(fn($msgs) => $msgs->first()->created_at->diffForHumans())->toArray();
-
-            $this->messageCounts = $codeCounts;
-            $this->messageLastTimes = $lastTimes;
-
-            $user = Auth::user();
-
-            $now = now();
-
-            $this->messageTimesByCode = Message::select('code', 'created_at')
-                ->orderBy('created_at', 'desc')
-                ->get()
-                ->groupBy('code')
-                ->map(function ($items) use ($now) {
-                    return $items->map(function ($item) use ($now) {
-                        $minutes = round($item->created_at->diffInMinutes($now));
-                        if ($minutes < 60) {
-                            return $minutes . 'm';
-                        }
-
-                        if ($minutes < 1440) {
-                            return floor($minutes / 60) . 'h';
-                        }
-
-                        return floor($minutes / 1440) . 'd';
-                    })->toArray();
-                })
-                ->toArray();
-
-            $groupReadyForCheck = Message::select('group_id')
-                ->selectRaw('SUM(active_group) as active_count')
-                ->groupBy('group_id')
-                ->get()
-                ->mapWithKeys(function ($item) {
-                    return [
-                        $item->group_id => $item->active_count == 0
-                    ];
-                })
-                ->toArray();
-
-
-            return view('livewire.admin.home.index', compact(
-                'messages',
-                'ended_chats',
-                'answers',
-                'wait_for_price',
-                'user',
-                'productsGrouped',
-                'activeGroupIds',
-                'answersGrouped',
-                'groups',
-                'groupReadyForCheck'
-            ));
-        }
+        $productsGrouped = $allMessages->whereIn('group_id', $activeGroupIds)
+            ->sortByDesc('updated_at')
+            ->groupBy('group_id');
 
     }
+
+    public
+    function checkAll($group_id)
+    {
+        $messages = Message::query()->where('group_id', $group_id)->get();
+        foreach ($messages as $message) {
+            foreach ($message->answers as $answer) {
+                $message->update(['chat_in_progress' => '0', 'active_group' => '0', 'final_price' => $answer->price]);
+            }
+        }
+    }
+
+    public
+    function handlePaste($data)
+    {
+        $user = Auth::user();
+
+        $text = trim($data['text'] ?? '');
+        $base64Image = $data['image'] ?? null;
+
+        $imagePath = null;
+
+        // 🔹 تبدیل Base64 به فایل
+        if ($base64Image) {
+            preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type);
+
+            $image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $image = base64_decode($image);
+
+            $extension = strtolower($type[1] ?? 'png');
+            $fileName = 'chat_' . Str::random(10) . '.' . $extension;
+
+            Storage::disk('public')->put("chat-images/$fileName", $image);
+
+            $imagePath = "chat-images/$fileName";
+        }
+
+        // اگر نه متن بود نه عکس → هیچ کاری نکن
+        if (!$text && !$imagePath) {
+            return;
+        }
+
+        $groupId = time() . '-' . rand(100000, 999999);
+
+        Message::create([
+            'user_id' => $user->id,
+            'code' => $text ?: '📷 تصویر ارسال شد',
+            'image_path' => $imagePath,
+            'active_group' => 1,
+            'question' => $this->hasMoreThanThreePersianLetters($text) ? '1' : '0',
+            'group_id' => $groupId,
+            'chat_in_progress' => '2',
+        ]);
+
+        $this->test = ''; // خالی شدن textarea
+    }
+
+    public
+    function toggleFollowUp($groupId)
+    {
+        $user = Auth::user();
+        $this->checkAccess($user->id);
+
+        $message = Message::where('group_id', $groupId)->first();
+
+        if (!$message) {
+            return;
+        }
+
+        if ($message->needs_follow_up) {
+            // 🔴 خاموش کردن پیگیری → برگردوندن زمان قبلی
+            Message::withoutTimestamps(function () use ($message) {
+                $message->update([
+                    'needs_follow_up' => false,
+                    'updated_at' => $message->previous_updated_at, // برگرد به جای قبلی
+                    'previous_updated_at' => null,
+                ]);
+            });
+
+        } else {
+            // 🟢 روشن کردن پیگیری → ذخیره زمان قبلی + بیاد بالا
+            $message->previous_updated_at = $message->updated_at;
+            $message->needs_follow_up = true;
+            $message->save(); // اینجا عمداً updated_at جدید می‌گیره
+        }
+    }
+
+
+    public function render()
+    {
+        $allMessages = Message::query()->orderBy('created_at', 'desc')->get();
+
+        $messages = $allMessages->where('chat_in_progress', '2');
+
+        $groups = $messages->groupBy('group_id');
+
+        $activeGroupIds = $allMessages->where('active_group', 1)->pluck('group_id')->unique();
+
+        $productsGrouped = $allMessages->whereIn('group_id', $activeGroupIds)
+            ->sortByDesc('updated_at')
+            ->groupBy('group_id');
+
+        $wait_for_price = $allMessages->where('chat_in_progress', '3')->sortByDesc('updated_at');
+
+        $ended_chats = $allMessages->where('chat_in_progress', '0')->sortByDesc('updated_at');
+
+        $answers = Answer::query()
+            ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
+            ->orderBy('message_id','desc')
+            ->get();
+
+        $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);
+        $codeCounts = $allMessages->pluck('code')->countBy()->toArray();
+
+        $lastTimes = $allMessages->groupBy('code')->map(fn($msgs) => $msgs->first()->created_at->diffForHumans())->toArray();
+
+        $this->messageCounts = $codeCounts;
+        $this->messageLastTimes = $lastTimes;
+
+        $user = Auth::user();
+
+        $now = now();
+
+        $this->messageTimesByCode = Message::select('code', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('code')
+            ->map(function ($items) use ($now) {
+                return $items->map(function ($item) use ($now) {
+                    $minutes = round($item->created_at->diffInMinutes($now));
+                    if ($minutes < 60) {
+                        return $minutes . 'm';
+                    }
+
+                    if ($minutes < 1440) {
+                        return floor($minutes / 60) . 'h';
+                    }
+
+                    return floor($minutes / 1440) . 'd';
+                })->toArray();
+            })
+            ->toArray();
+
+        $groupReadyForCheck = Message::select('group_id')
+            ->selectRaw('SUM(active_group) as active_count')
+            ->groupBy('group_id')
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [
+                    $item->group_id => $item->active_count == 0
+                ];
+            })
+            ->toArray();
+
+
+        return view('livewire.admin.home.index', compact(
+            'messages',
+            'ended_chats',
+            'answers',
+            'wait_for_price',
+            'user',
+            'productsGrouped',
+            'activeGroupIds',
+            'answersGrouped',
+            'groups',
+            'groupReadyForCheck'
+        ));
+    }
+
+}

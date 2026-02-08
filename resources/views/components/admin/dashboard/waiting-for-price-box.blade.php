@@ -1,7 +1,7 @@
 @props(['wait_for_price', 'prices' => []])
 
 <style>
-.dash-box-wait { background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); overflow: hidden; }
+.dash-box-wait { background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); overflow: scroll; }
 .dash-box-wait .dash-header { background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%); color: #fff; padding: 0.65rem 0.75rem; font-weight: 700; text-align: center; font-size: 0.9rem; border-radius: 1rem 1rem 0 0; }
 .dash-box-wait .dash-group-card { background: #fff; border-radius: 1rem; padding: 0.75rem; margin-bottom: 0.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
 .dash-box-wait .dash-item { margin-top: 0.5rem; padding: 0.5rem; border-radius: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; }
@@ -30,7 +30,7 @@
                     </div>
                     <div class="flex gap-1">
                         <button onclick="copyGroupData('{{ $groupId }}', this, 'codes')" class="dash-btn-sm green" title="کپی فقط کدها">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/></svg>
                         </button>
                     </div>
                 </div>

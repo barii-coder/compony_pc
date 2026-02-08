@@ -1,4 +1,8 @@
 <div class="w-full p-1 mb-4">
+    <div class="lightbox" wire:ignore>
+        <span class="close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img"/>
+    </div>
     <a class="block w-0.5" href="/">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -130,9 +134,9 @@
                                             <div class="text-[11px] text-gray-500">
                                                 {{ $price !== null && $price !== '' ? $price : 'در حال بررسی' }}
                                             </div>
-                                            <img src="{{$message->image_url}}" class="gallery-img"
-                                                 style="width: 15%;border-radius: 0">
                                         </div>
+                                        <img src="{{$message->image_url}}" class="gallery-img"
+                                             style="width: 40px;border-radius: 0">
                                     </div>
                                 </div>
                             </div>
@@ -146,6 +150,26 @@
     </div>
 
     <script>
+
+        const lightbox = document.querySelector(".lightbox");
+        const lightboxImg = document.getElementById("lightbox-img");
+        const closeBtn = document.querySelector(".close");
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("gallery-img")) {
+                lightbox.style.display = "block";
+                lightboxImg.src = e.target.src;
+            }
+        });
+
+        closeBtn.addEventListener("click", () => {
+            lightbox.style.display = "none";
+        });
+
+        lightbox.addEventListener("click", (e) => {
+            if (e.target === lightbox) lightbox.style.display = "none";
+        });
+
         function copySingleMessage(messageId, btn) {
             const messageEl = document.querySelector(`.message-item[data-message-id="${messageId}"]`);
             if (!messageEl) return;

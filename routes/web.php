@@ -6,6 +6,12 @@ use \App\Livewire\Admin\Home\Index;
 
 Route::get('/', Index::class)->name('home');
 
+Route::get('/test-admin-broadcast', function () {
+    event(new \App\Events\AdminNotificationEvent('تست alert ⚡'));
+    return 'sent';
+});
+
+
 Route::get('/submit', \App\Livewire\Admin\Support\Index::class);
 // Login
 Route::get('/login', fn() => view('login'))->name('login');

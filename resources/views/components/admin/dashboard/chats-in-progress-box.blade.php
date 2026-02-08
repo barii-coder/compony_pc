@@ -2,10 +2,10 @@
 
 <style>
 /* باکس چت‌های در جریان */
-.dash-box-chats { direction: rtl; background: #fff; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); overflow: auto; }
+.dash-box-chats { direction: ltr; background: #fff; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); overflow: auto; }
 .dash-box-chats .dash-header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: #fff; padding: 0.75rem 1rem; font-weight: 700; text-align: center; font-size: 0.95rem; letter-spacing: 0.02em; }
 /* کارت هر گروه */
-.dash-box-chats .dash-card { background: #fafbfc; border-radius: 0.875rem; padding: 0; margin: 0 0.5rem 0.6rem; box-shadow: 0 1px 6px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; overflow: hidden; }
+.dash-box-chats .dash-card { background: #fafbfc; border-radius: 0.875rem; padding: 0; margin: 0 0.5rem 0.6rem; box-shadow: 0 1px 6px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; overflow: hidden; }
 .dash-box-chats .dash-card:last-child { margin-bottom: 0.5rem; }
 /* هدر کارت: آواتار + دکمه‌ها */
 .dash-box-chats .dash-card-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem; background: #f1f5f9; border-bottom: 1px solid #e5e7eb; }
@@ -59,7 +59,9 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                         </button>
                         <button onclick="copyChatGroupCodes('{{ $groupId }}', this)" class="dash-btn-icon copy" title="کپی کدهای این گروه">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                            </svg>
                         </button>
                     </div>
                 </div>

@@ -50,7 +50,7 @@
                 <label class="chat-option"><input wire:model="tamirkar" type="checkbox"><span class="chat-option-label">تعمیرکار</span><span class="chat-option-dot"></span></label>
                 <label class="chat-option"><input wire:model="moshtaryg" type="checkbox"><span class="chat-option-label">مشتری جدید</span><span class="chat-option-dot"></span></label>
             </div>
-            <div class="chat-buyer-wrap">
+            <div class="chat-buyer-wrap" wire:poll.1ms>
                 <input wire:model="buyer_name" type="text" placeholder="نام فروشنده / توضیحات (اختیاری)" dir="rtl">
             </div>
         </div>

@@ -161,6 +161,7 @@
     /*box-shadow: 0 0 5px #999 ;*/
     bottom: 20px;
     width: 60%;
+    overflow: scroll!important;
     background: #e5ddd5;
     border-radius: 10px;
 }

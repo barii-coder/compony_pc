@@ -1,7 +1,7 @@
 @props(['answersGrouped', 'groupReadyForCheck', 'user'])
 
 <style>
-.dash-box-pending { direction: rtl; background: #fff; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); overflow: hidden; }
+.dash-box-pending { direction: ltr; background: #fff; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); overflow: scroll; }
 .dash-box-pending .dash-header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: #fff; padding: 0.5rem 0.75rem; font-weight: 700; text-align: center; font-size: 0.85rem; }
 .dash-box-pending .dash-group-card { background: #fafbfc; border-radius: 0.875rem; padding: 0; margin: 0.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; overflow: hidden; }
 .dash-box-pending .dash-group-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem; background: #f1f5f9; border-bottom: 1px solid #e5e7eb; }
@@ -44,13 +44,15 @@
                     <img src="{{ $firstAnswer->message->user->profile_image_path }}" class="dash-avatar" alt="">
                     <div class="dash-group-actions">
                         <button wire:click="back('{{ $groupId }}')" class="dash-btn-icon red" title="برگشت">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
                         </button>
                         <button onclick="copyGroupCodes('{{ $groupId }}', this)" class="dash-btn-icon green copy-btn" title="کپی کلی">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
                         </button>
                         <button onclick="copyOnlyCodes('{{ $groupId }}', this)" class="dash-btn-icon green copy-btn" title="کپی کد ها">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                            </svg>
                         </button>
                     </div>
                 </div>

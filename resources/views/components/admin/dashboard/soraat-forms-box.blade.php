@@ -8,7 +8,8 @@
             @if(count($messages) > 1)
                 <div class="border rounded p-4 mb-4 m-1 bg-gray-50 inline-block float-left" style="font-size: 9pt; font-weight: bold">
                     <div class="font-bold mb-2">گروه: {{ $groupId }}</div>
-                    <form wire:submit.prevent="editPriceOnSoraats(Object.fromEntries(new FormData($event.target)),'{{ $groupId }}')">
+                    <form wire:submit.prevent="editPriceOnSoraats(Object.fromEntries(new FormData($event.target)),'{{ $groupId }}')"
+                          wire:keydown.enter.prevent="editPriceOnSoraats(Object.fromEntries(new FormData($event.target.closest('form'))),'{{ $groupId }}')">
                         @foreach($messages as $message)
                             <div class="{{ Str::endsWith(trim($message->code), ': -') ? 'text-gray-400 italic' : '' }}">
                                 @php
@@ -52,7 +53,8 @@
     <div class="m-2">
         @foreach($productsGrouped as $groupId => $messages)
             <div class="border rounded p-4 mb-4 m-1 bg-gray-50 inline-block float-left" style="font-size: 9pt; font-weight: bold">
-                <form wire:submit.prevent="editPriceOnSoraats(Object.fromEntries(new FormData($event.target)), '{{ $groupId }}')">
+                <form wire:submit.prevent="editPriceOnSoraats(Object.fromEntries(new FormData($event.target)), '{{ $groupId }}')"
+                      wire:keydown.enter.prevent="editPriceOnSoraats(Object.fromEntries(new FormData($event.target.closest('form'))), '{{ $groupId }}')">
                     @foreach($messages as $message)
                         <div class="soraat-item-{{ $groupId }} {{ Str::endsWith(trim($message->code), ': -') ? 'text-gray-400 italic' : '' }}">
                             @php

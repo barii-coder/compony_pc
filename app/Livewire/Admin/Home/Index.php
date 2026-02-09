@@ -6,7 +6,6 @@ use App\Models\Answer;
 use App\Models\Message;
 use App\Events\AdminNotificationEvent;
 use App\Models\User;
-use http\Env\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -91,7 +90,6 @@ class Index extends Component
             ]);
         }
     }
-
 
     function hasMoreThanThreePersianLetters($string)
     {
@@ -744,7 +742,7 @@ class Index extends Component
 
         $answers = Answer::query()
             ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
-            ->orderBy('message_id','desc')
+            ->orderBy('message_id', 'desc')
             ->get();
 
         $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);

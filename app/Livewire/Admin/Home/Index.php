@@ -235,7 +235,7 @@ class Index extends Component
 
             if ($check == 1 && empty($priceParts)) {
                 $message->delete();
-                continue; // بره خط بعدی
+                continue;
             }
 
             if ($this->checkbox == true) {

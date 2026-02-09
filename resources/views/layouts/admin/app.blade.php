@@ -7,6 +7,16 @@
 @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
                 @vite(['resources/css/app.css', 'resources/js/app.js'])
             @endif
+    <style>
+        .max-h{
+            max-height: 600px;
+        }
+        @media (min-width: 2000px) {
+            .max-h{
+                max-height: 900px;
+            }
+        }
+    </style>
 {{--        <script src="https://cdn.tailwindcss.com"></script>--}}
     {{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>--}}
     <title>{{ $title ?? 'Page Title' }}</title>

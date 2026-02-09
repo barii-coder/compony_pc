@@ -1,7 +1,7 @@
 @props(['ended_chats'])
 
 <style>
-.dash-box-done { background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); overflow: scroll; }
+.dash-box-done { background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); overflow: auto; }
 .dash-box-done .dash-header { background: linear-gradient(135deg, #047857 0%, #059669 100%); color: #fff; padding: 0.65rem 0.75rem; font-weight: 700; text-align: center; font-size: 0.9rem; border-radius: 1rem 1rem 0 0; }
 .dash-box-done .dash-card { border-radius: 0.75rem; padding: 0.5rem 0.6rem; margin-bottom: 0.5rem; border: 1px solid #e2e8f0; transition: box-shadow 0.2s; }
 .dash-box-done .dash-card.normal { background: #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
@@ -17,7 +17,7 @@
 .dash-box-done .dash-time { font-size: 10px; color: #64748b; }
 </style>
 
-<div class="dash-box-done float-left m-2 w-[18%] max-h-[600px] overflow-auto">
+<div class="dash-box-done float-left m-2 w-[18%] max-h overflow-auto">
     <div class="dash-header sticky top-0 z-10">تکمیل شده</div>
     <ul class="text-xs space-y-2 p-2" style="list-style: none;">
         @foreach($ended_chats->groupBy('group_id') as $groupId => $groupChats)

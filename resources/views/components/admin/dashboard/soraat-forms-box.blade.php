@@ -2,7 +2,7 @@
 
 <style>
 /* باکس صورت ها */
-.dash-soraat-bar { direction: rtl; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); border-radius: 1rem; background: #fff; overflow: scroll; }
+.dash-soraat-bar {box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); border-radius: 1rem; background: #fff; overflow: scroll; }
 .dash-soraat-bar .status_text.dash-soraat-title { display: block; float: none; background: linear-gradient(135deg, #334155 0%, #475569 100%); color: #fff; padding: 0.4rem 0.6rem; font-weight: 600; font-size: 0.8rem; text-align: center; line-height: 1.3; }
 /* ردیف کارت‌ها با اسکرول افقی + اسکرول‌بار باریک */
 .dash-soraat-bar .dash-soraat-scroll {display: flex;flex-direction: row;flex-wrap: wrap;overflow-x: hidden;overflow-y: auto;padding: 0.6rem;
@@ -16,7 +16,7 @@
 .dash-soraat-bar .dash-soraat-card {height: 100%; flex: 0 0 auto; min-width: 250px; max-width: 320px; background: #fff; border-radius: 0.875rem; padding: 0; margin: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; font-size: 12px; overflow: hidden; }
 .dash-soraat-card .dash-soraat-group-title { font-size: 13px; font-weight: 700; color: #1e293b; padding: 0.75rem 1rem; margin: 0; background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); border-bottom: 1px solid #e2e8f0; }
 /* هر سطر آیتم */
-.dash-soraat-card .dash-soraat-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; min-height: 36px; line-height: 1.5; flex-wrap: wrap; border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
+.dash-soraat-card .dash-soraat-row { display: flex; align-items: center; gap: 0.5rem; min-height: 36px; line-height: 1.5; flex-wrap: wrap; border-bottom: 1px solid #f1f5f9; transition: background 0.15s;padding: 3px 5px }
 .dash-soraat-card .dash-soraat-row:last-of-type { border-bottom: none; }
 .dash-soraat-card .dash-soraat-row:hover { background: #fafbfc; }
 .dash-soraat-card .dash-soraat-row.italic { color: #94a3b8; font-style: italic; }
@@ -26,7 +26,7 @@
 .dash-soraat-card .dash-soraat-row .soraat-code:hover { color: #1e40af; background: #e0e7ff; }
 .dash-soraat-card .dash-soraat-row .soraat-colon { color: #94a3b8; font-weight: 600; margin: 0 0.1rem; }
 /* اینپوت‌ها */
-.dash-soraat-card .dash-soraat-row input[type="text"] { height: 32px; padding: 0 0.6rem; border-radius: 0.5rem; font-size: 12px; min-width: 80px; flex: 1; max-width: 160px; background: #f8fafc; box-shadow: 0 0 0 1px #e2e8f0; transition: box-shadow 0.2s, background 0.2s; box-sizing: border-box; }
+.dash-soraat-card .dash-soraat-row input[type="text"] { height: 22px; padding: 3px; border-radius: 0.5rem; font-size: 12px; min-width: 80px; flex: 1; max-width: 160px; background: #f8fafc; box-shadow: 0 0 0 1px #e2e8f0; transition: box-shadow 0.2s, background 0.2s; box-sizing: border-box; }
 .dash-soraat-card .dash-soraat-row input[type="text"]:focus { outline: none; box-shadow: 0 0 0 2px #3b82f6; background: #fff; }
 .dash-soraat-card .dash-soraat-row input[type="text"]::placeholder { color: #94a3b8; }
 .dash-soraat-card .dash-soraat-row input.soraat-input-red { color: #dc2626 !important; }
@@ -100,13 +100,13 @@
                                     <input type="text" class="soraat-input-green" placeholder="درحال بررسی" name="price.{{ $message->id }}">
                                 @endif
                             @elseif(Str::endsWith(trim($message->code), ['1','2','3','4','5','6','7','8','9','0','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']))
-                                <input type="text" {{$codeValue == null ? "value=-" : "value=$codeValue"}} name="price.{{ $message->id }}">
+                                <input type="text" value="{{$codeValue}}" name="price.{{ $message->id }}">
                             @else
                                 <input type="text" name="price.{{ $message->id }}" value="-">
                             @endif
                         </div>
                     @endforeach
-                    <div class="dash-soraat-footer">
+                    <div class="dash-soraat-footer" style="direction: rtl">
                         <button type="submit" class="dash-btn-submit">ثبت همه</button>
                         <div class="dash-copy-btns">
                             <button type="button" onclick="copySoraatGroup('{{ $groupId }}', this, 'all')" title="کپی همه">

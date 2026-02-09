@@ -1,35 +1,54 @@
 @props(['answersGrouped', 'groupReadyForCheck', 'user'])
 
 <style>
-.dash-box-pending { direction: ltr; background: #fff; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); overflow: scroll; }
-.dash-box-pending .dash-header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: #fff; padding: 0.5rem 0.75rem; font-weight: 700; text-align: center; font-size: 0.85rem; }
-.dash-box-pending .dash-group-card { background: #fafbfc; border-radius: 0.875rem; padding: 0; margin: 0.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid #e5e7eb; overflow: hidden; }
-.dash-box-pending .dash-group-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem; background: #f1f5f9; border-bottom: 1px solid #e5e7eb; }
-.dash-box-pending .dash-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-.dash-box-pending .dash-group-actions { display: flex; align-items: center; gap: 0.25rem; margin-right: auto; }
-.dash-box-pending .dash-btn-icon { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #64748b; transition: background 0.2s, color 0.2s, transform 0.1s; }
-.dash-box-pending .dash-btn-icon:hover { transform: scale(1.06); }
-.dash-box-pending .dash-btn-icon.green:hover { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
-.dash-box-pending .dash-btn-icon.red:hover { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
-.dash-box-pending .dash-answer-item { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f1f5f9; background: #fff; transition: background 0.15s; font-size: 12px; }
-.dash-box-pending .dash-answer-item:last-child { border-bottom: none; }
-.dash-box-pending .dash-answer-item:hover { background: #fafbfc; }
-.dash-box-pending .dash-answer-item .gallery-img { max-height: 100px; width: auto; border-radius: 6px; display: block; margin-bottom: 0.35rem; cursor: pointer; }
-.dash-box-pending .dash-code-tag { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 0.375rem; background: #f1f5f9; font-weight: 600; color: #334155; font-size: 12px; cursor: pointer; transition: background 0.2s, color 0.2s; }
-.dash-box-pending .dash-code-tag:hover { background: #e0e7ff; color: #1e40af; }
-.dash-box-pending .dash-badge { display: inline-flex; padding: 0.3rem 0.6rem; border-radius: 0.5rem; font-size: 11px; font-weight: 600; }
-.dash-box-pending .dash-badge-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); color: #fff; }
-.dash-box-pending .dash-badge-green { background: linear-gradient(180deg, #22c55e, #16a34a); color: #fff; }
-.dash-box-pending .dash-badge-amber { background: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 11px; }
-.dash-box-pending .dash-btn-action { padding: 0.35rem 0.6rem; border-radius: 0.5rem; font-size: 11px; font-weight: 600; transition: transform 0.1s, box-shadow 0.2s; }
-.dash-box-pending .dash-btn-action.blue { background: linear-gradient(180deg, #3b82f6, #2563eb); color: #fff; }
-.dash-box-pending .dash-btn-action.blue:hover { box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35); transform: translateY(-1px); }
-.dash-box-pending .dash-btn-action.red { background: linear-gradient(180deg, #ef4444, #dc2626); color: #fff; font-size: 10px; padding: 0.25rem 0.5rem; }
-.dash-box-pending .dash-respondent { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 11px; color: #64748b; }
-.dash-box-pending .dash-respondent img { width: 28px; height: 28px; border-radius: 0.5rem; object-fit: cover; box-shadow: 0 0 0 1px #fff; }
+    .dash-box-pending { direction: ltr; background: #fff; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); overflow: auto; }
+    .dash-box-pending .dash-header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: #fff; padding: 0.5rem 0.75rem; font-weight: 700; text-align: center; font-size: 0.85rem; }
+    .dash-group-card {
+        display: flex;
+        gap: 0.5rem; /* فاصله بین هدر و پیام‌ها */
+    }
+
+    .dash-group-head {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column; /* ستون عمودی */
+        align-items: center; /* وسط چین */
+        gap: 0.5rem;
+    }
+
+    .dash-group-actions {
+        display: flex;
+        flex-direction: column; /* دکمه‌ها زیر هم */
+        gap: 0.25rem;
+    }
+
+    .dash-box-pending .dash-group-card { background: #fafbfc; border-radius: 0.875rem; padding: 0; margin: 0.5rem; box-shadow: 0 2px 10px rgba(0,0,0,.2); border: 1px solid #e5e7eb; overflow: hidden; }
+    .dash-box-pending .dash-group-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem; background: #f1f5f9; border-bottom: 1px solid #e5e7eb; }
+    .dash-box-pending .dash-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .dash-box-pending .dash-group-actions { display: flex; align-items: center; gap: 0.25rem; margin-right: auto; }
+    .dash-box-pending .dash-btn-icon { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #64748b; transition: background 0.2s, color 0.2s, transform 0.1s; }
+    .dash-box-pending .dash-btn-icon:hover { transform: scale(1.06); }
+    .dash-box-pending .dash-btn-icon.green:hover { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+    .dash-box-pending .dash-btn-icon.red:hover { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
+    .dash-box-pending .dash-answer-item { padding: 2px; border-bottom: 1px solid #f1f5f9; background: #fff; transition: background 0.15s; font-size: 12px; }
+    .dash-box-pending .dash-answer-item:last-child { border-bottom: none; }
+    .dash-box-pending .dash-answer-item:hover { background: #fafbfc; }
+    .dash-box-pending .dash-answer-item .gallery-img { max-height: 100px; width: auto; border-radius: 6px; display: block; margin-bottom: 0.35rem; cursor: pointer; }
+    .dash-box-pending .dash-code-tag { display: inline-block; padding: 3px;vertical-align: middle; border-radius: 0.375rem; background: #f1f5f9; font-weight: 600; color: #334155; font-size: 12px; cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .dash-box-pending .dash-code-tag:hover { background: #e0e7ff; color: #1e40af; }
+    .dash-box-pending .dash-badge { display: inline-flex; padding: 0.3rem 0.6rem;vertical-align: middle; border-radius: 0.5rem; font-size: 11px; font-weight: 600; }
+    .dash-box-pending .dash-badge-blue { background: linear-gradient(180deg, #3b82f6, #2563eb); color: #fff; }
+    .dash-box-pending .dash-badge-green { background: linear-gradient(180deg, #22c55e, #16a34a); color: #fff; }
+    .dash-box-pending .dash-badge-amber { background: #fef3c7; color: #92400e; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 11px; }
+    .dash-box-pending .dash-btn-action { padding: 5px 0.3rem;vertical-align: middle; border-radius: 0.5rem; font-size: 11px; font-weight: 600; transition: transform 0.1s, box-shadow 0.2s; }
+    .dash-box-pending .dash-btn-action.blue { background: linear-gradient(180deg, #3b82f6, #2563eb); color: #fff; }
+    .dash-box-pending .dash-btn-action.blue:hover { box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35); transform: translateY(-1px); }
+    .dash-box-pending .dash-btn-action.red { background: linear-gradient(180deg, #ef4444, #dc2626); color: #fff; font-size: 10px; padding: 0.25rem 0.5rem; }
+    .dash-box-pending .dash-respondent { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 11px; color: #64748b; }
+    .dash-box-pending .dash-respondent img { width: 28px; height: 28px; border-radius: 0.5rem; object-fit: cover; box-shadow: 0 0 0 1px #fff; }
 </style>
 
-<div class="dash-box-pending float-left m-2 w-[26%] max-h-[600px] overflow-auto">
+<div class="dash-box-pending float-left m-2 w-[26%] max-h overflow-auto">
     <div class="dash-header sticky top-0 z-10">منتظر بررسی</div>
     <ul class="p-2" style="list-style: none; margin: 0;">
         @foreach($answersGrouped as $groupId => $groupAnswers)
@@ -71,7 +90,7 @@
                             @endif
                             @if($answer->price != 'x' && $answer->price != 'L')
                                 @if($answer->respondent_by_code == 1)
-                                    @if($answer->price != null)<span class="dash-badge dash-badge-blue">{{ $answer->price }}</span>@endif
+                                    @if($answer->price != null)<span class="dash-badge dash-badge-blue middle">{{ $answer->price }}</span>@endif
                                 @elseif($answer->respondent_by_code == 0)
                                     @if($answer->price != null)<span class="dash-badge dash-badge-green">{{ $answer->price }}</span>@endif
                                 @else
@@ -79,9 +98,9 @@
                                 @endif
                             @endif
                             @if($answer->respondent_by_code && $answer->respondent_id)
-                                <div class="dash-respondent mt-1">
-                                    <img src="{{ $answer->respondent_profile_image_path }}" alt="">
-                                    <span>{{ $answer->updated_at->diffForHumans(['short' => true, 'syntax' => \Carbon\CarbonInterface::DIFF_ABSOLUTE, 'parts' => 1]) }}</span>
+                                <div class="dash-respondent mt-1 inline-block">
+                                    <img src="{{ $answer->respondent_profile_image_path }}" alt="" class="middle inline-block">
+                                    <span class="middle">{{ $answer->updated_at->diffForHumans(['short' => true, 'syntax' => \Carbon\CarbonInterface::DIFF_ABSOLUTE, 'parts' => 1]) }}</span>
                                     @if($user->id == $answer->respondent_id)
                                         <button wire:click="save_for_ad_price({{ $answer->message->id }})" class="dash-btn-action blue">➜</button>
                                         <button wire:click="its_unavailable_on_column_2({{ $answer->message->id }})" class="dash-btn-action red">X</button>

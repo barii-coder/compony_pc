@@ -58,15 +58,6 @@
 
     <script>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            Echo.private('admins')
-                .listen('.admin.notification', (e) => {
-                    alert('نوتیف ادمین دریافت شد: ' + e.message);
-                    console.log('Admin event received:', e);
-                });
-
-        });
-
         function showToast(message) {
             alert(message) // اینجا Toast حرفه‌ای بذار
         }

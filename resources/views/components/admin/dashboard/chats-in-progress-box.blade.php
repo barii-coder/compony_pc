@@ -57,7 +57,7 @@
 .dash-box-chats .dash-input-wrap input::placeholder { color: #94a3b8; }
 .dash-box-chats .dash-btn-submit { padding: 0 0.5rem; font-size: 11px; font-weight: 700; background: linear-gradient(180deg, #2563eb, #1d4ed8); color: #fff; transition: opacity 0.2s, box-shadow 0.2s; display: inline-flex; align-items: center; justify-content: center; }
 .dash-box-chats .dash-btn-submit:hover { opacity: 0.95; box-shadow: inset 0 1px 0 rgba(255,255,255,0.2); }
-.dash-box-chats .dash-btn-submit .dash-submit-arrow { display: inline-block; transform: rotate(180deg); }
+.dash-box-chats .dash-btn-submit .dash-submit-arrow { display: inline-block;margin-top: 2px }
 /* دکمه ثبت انتخاب‌ها */
 .dash-box-chats .dash-btn-register { margin-top: 0.5rem; width: 100%; padding: 0.45rem; border-radius: 0.5rem; font-weight: 600; font-size: 12px; background: linear-gradient(180deg, #059669, #047857); color: #fff; transition: transform 0.1s, box-shadow 0.2s; }
 .dash-box-chats .dash-btn-register:hover { box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35); transform: translateY(-1px); }
@@ -85,7 +85,12 @@
                     </div>
                 </div>
                 <div class="dash-msg-body">
-                    @foreach($messages as $message)
+                    @php $shownBuyerGroups = []; @endphp
+                @foreach($messages as $message)
+                        @if(!empty($message->buyer_name) && !in_array($groupId, $shownBuyerGroups))
+                            <span class="dash-buyer-tag float-right m-2">{{ $message->buyer_name }}</span>
+                            @php $shownBuyerGroups[] = $groupId; @endphp
+                        @endif
                         @php $isEmpty = preg_match('/:\s*-\s*$/', trim($message->code)); $hasNoColon = strpos($message->code, ':') === false; $count = $messageCounts[$message->code] ?? 0; @endphp
                         <li id="message-{{ $message->id }}" class="dash-msg-item">
                             <img src="{{ $message->image_url }}" alt="" class="gallery-img" style="border-radius: 6px;">
@@ -96,10 +101,9 @@
                                     @foreach(['a','k','h','g','x','L', $message->question == '1' ? '👍' : null, $message->question == '1' ? '👎' : null] as $c)
                                         @if($c)
                                             @php $key = $message->id . ':' . $c; @endphp
-                                            <button onclick="handleCodeClick(event,'{{ $c }}',{{ $message->id }})" class="dash-btn-code {{ in_array($key, $selectedCodes) ? 'selected' : '' }}">{{ $c }}</button>
+                                            <button onclick="handleCodeClick(event,'{{ $c }}',{{ $message->id }})" style="{{$c=='x'? 'margin-left: 10px' : ''}}" class="dash-btn-code {{ in_array($key, $selectedCodes) ? 'selected' : '' }}">{{ $c }}</button>
                                         @endif
                                     @endforeach
-                                    @if(!empty($message->buyer_name))<span class="dash-buyer-tag">{{ $message->buyer_name }}</span>@endif
                                 </div>
                                 <div class="dash-comment-price-row">
                                     @if($user->id == '1' || $user->id == '5')

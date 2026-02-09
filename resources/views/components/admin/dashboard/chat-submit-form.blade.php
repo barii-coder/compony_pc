@@ -58,7 +58,16 @@
     <div id="chat-input">
         <textarea type="text" wire:model="test" id="messageInput" wire:keydown.enter.prevent="submit" placeholder="پیام..." dir="rtl"></textarea>
         <div id="previewContainer"></div>
-        <button type="submit"><span class="send-arrow">➤</span></button>
+        <button type="submit"
+                wire:loading.attr="disabled"
+                wire:target="submit"
+                class="relative">
+
+            <span wire:loading.remove wire:target="submit" class="send-arrow">➤</span>
+
+            <span wire:loading wire:target="submit"
+                  style="font-size:12px;">...</span>
+        </button>
         <label class="chat-bottom-row chat-check-wrap">
             <input wire:model="checkbox" type="checkbox">
             <span>کد جدا</span>

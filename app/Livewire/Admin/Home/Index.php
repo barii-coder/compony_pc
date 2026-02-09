@@ -4,8 +4,8 @@ namespace App\Livewire\Admin\Home;
 
 use App\Models\Answer;
 use App\Models\Message;
-use App\Events\AdminNotificationEvent;
 use App\Models\User;
+use http\Env\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -29,6 +29,9 @@ class Index extends Component
     // WAIT_FOR_PRICE = 3;
 
     public $messageTimesByCode = [];
+
+    public $isSubmitting = false;
+
 
     public $test;
 
@@ -90,6 +93,7 @@ class Index extends Component
             ]);
         }
     }
+
 
     function hasMoreThanThreePersianLetters($string)
     {
@@ -164,6 +168,8 @@ class Index extends Component
 
     public function submit()
     {
+        if ($this->isSubmitting) return;
+        $this->isSubmitting = true;
 
         if (empty(trim($this->buyer_name))) {
 
@@ -233,7 +239,7 @@ class Index extends Component
 
             if ($check == 1 && empty($priceParts)) {
                 $message->delete();
-                continue;
+                continue; // بره خط بعدی
             }
 
             if ($this->checkbox == true) {
@@ -247,11 +253,11 @@ class Index extends Component
         }
 
         $this->messageCounts = array_count_values(Message::pluck('code')->toArray());
-        event(new AdminNotificationEvent('یه سفارش جدید ثبت شد 🚀'));
 
         $this->test = "";
         $this->reset();
         $this->checkbox = false;
+        $this->isSubmitting = false;
     }
 
     public function submit_comment($message_id)
@@ -742,7 +748,7 @@ class Index extends Component
 
         $answers = Answer::query()
             ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
-            ->orderBy('message_id', 'desc')
+            ->orderBy('message_id','desc')
             ->get();
 
         $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);

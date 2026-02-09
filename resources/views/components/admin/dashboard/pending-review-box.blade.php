@@ -3,25 +3,9 @@
 <style>
     .dash-box-pending { direction: ltr; background: #fff; border-radius: 1rem; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); overflow: auto; }
     .dash-box-pending .dash-header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: #fff; padding: 0.5rem 0.75rem; font-weight: 700; text-align: center; font-size: 0.85rem; }
-    .dash-group-card {
-        display: flex;
-        gap: 0.5rem; /* فاصله بین هدر و پیام‌ها */
-    }
-
-    .dash-group-head {
-        flex-shrink: 0;
-        display: flex;
-        flex-direction: column; /* ستون عمودی */
-        align-items: center; /* وسط چین */
-        gap: 0.5rem;
-    }
-
-    .dash-group-actions {
-        display: flex;
-        flex-direction: column; /* دکمه‌ها زیر هم */
-        gap: 0.25rem;
-    }
-
+    .dash-group-card {display: flex;gap: 0.5rem;}
+    .dash-group-head {flex-shrink: 0;display: flex;flex-direction: column;align-items: center;gap: 0.5rem;}
+    .dash-group-actions {display: flex;flex-direction: column;gap: 0.25rem;}
     .dash-box-pending .dash-group-card { background: #fafbfc; border-radius: 0.875rem; padding: 0; margin: 0.5rem; box-shadow: 0 2px 10px rgba(0,0,0,.2); border: 1px solid #e5e7eb; overflow: hidden; }
     .dash-box-pending .dash-group-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.6rem; background: #f1f5f9; border-bottom: 1px solid #e5e7eb; }
     .dash-box-pending .dash-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
@@ -30,7 +14,7 @@
     .dash-box-pending .dash-btn-icon:hover { transform: scale(1.06); }
     .dash-box-pending .dash-btn-icon.green:hover { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
     .dash-box-pending .dash-btn-icon.red:hover { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
-    .dash-box-pending .dash-answer-item { padding: 2px; border-bottom: 1px solid #f1f5f9; background: #fff; transition: background 0.15s; font-size: 12px; }
+    .dash-box-pending .dash-answer-item { padding: 2px; border-bottom: 1px solid #f1f5f9;transition: background 0.15s; font-size: 12px; }
     .dash-box-pending .dash-answer-item:last-child { border-bottom: none; }
     .dash-box-pending .dash-answer-item:hover { background: #fafbfc; }
     .dash-box-pending .dash-answer-item .gallery-img { max-height: 100px; width: auto; border-radius: 6px; display: block; margin-bottom: 0.35rem; cursor: pointer; }

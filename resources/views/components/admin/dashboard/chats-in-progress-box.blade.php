@@ -75,7 +75,11 @@
                     <img src="{{ $firstMessage->user->profile_image_path }}" class="dash-avatar" alt="">
                     <div class="dash-card-actions">
                         <button wire:click="deleteGroup('{{ $groupId }}')" class="dash-btn-icon" title="حذف گروه">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            <span wire:loading.remove wire:target="deleteGroup('{{ $groupId }}')" class="send-arrow">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                            </span>
+
+                            <span wire:loading wire:target="deleteGroup('{{ $groupId }}')" style="font-size:12px;">...</span>
                         </button>
                         <button onclick="copyChatGroupCodes('{{ $groupId }}', this)" class="dash-btn-icon copy" title="کپی کدهای این گروه">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
@@ -111,7 +115,11 @@
                                     @endif
                                     <div class="dash-input-wrap">
                                         <input type="text" wire:model="prices.{{ $message->id }}" placeholder="قیمت" wire:ignore wire:keydown.enter="submit_answer({{ $message->id }})">
-                                        <button type="button" wire:click="submit_answer({{ $message->id }})" class="dash-btn-submit"><span class="dash-submit-arrow">➤</span></button>
+                                        <button type="button" wire:click="submit_answer({{ $message->id }})" class="dash-btn-submit"><span class="dash-submit-arrow">
+                                                            <span wire:loading.remove wire:target="submit_answer({{ $message->id }})" class="send-arrow">➤</span>
+
+                                                <span wire:loading wire:target="submit_answer({{ $message->id }})" style="font-size:12px;">...</span>
+                                                </span></button>
                                     </div>
                                 </div>
                                 @if(collect($selectedCodes)->contains(fn($v) => str_starts_with($v, $message->id . ':')))

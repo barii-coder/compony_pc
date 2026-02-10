@@ -47,7 +47,11 @@
                     <img src="{{ $firstAnswer->message->user->profile_image_path }}" class="dash-avatar" alt="">
                     <div class="dash-group-actions">
                         <button wire:click="back('{{ $groupId }}')" class="dash-btn-icon red" title="برگشت">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
+                            <span wire:loading.remove wire:target="back('{{ $groupId }}')" class="send-arrow">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
+                            </span>
+
+                            <span wire:loading wire:target="back('{{ $groupId }}')" style="font-size:12px;">...</span>
                         </button>
                         <button onclick="copyGroupCodes('{{ $groupId }}', this)" class="dash-btn-icon green copy-btn" title="کپی کلی">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>
@@ -59,22 +63,26 @@
                         </button>
                     </div>
                 </div>
-                <div class="p-1">
+                <div class="p-1 w-full">
                     @foreach($groupAnswers as $answer)
                         <div class="dash-answer-item" wire:key="answer-{{ $answer->id }}">
                             <img src="{{ $answer->message->image_url }}" alt="" class="gallery-img">
-                            <p onclick="copyText(this)" class="group-code group-{{ $groupId }} dash-code-tag" data-price="{{ $answer->price }}">{{ trim(explode(':', $answer->message->code)[0]) }}</p>
+                            <p onclick="copyText(this)" class="float-left group-code mr-1 group-{{ $groupId }} dash-code-tag" data-price="{{ $answer->price }}">{{ trim(explode(':', $answer->message->code)[0]) }}</p>
                             @if($answer->comment && $answer->price == null)
-                                <span class="dash-badge-amber ml-2">{{ $answer->comment }}</span>
+                                <span class="dash-badge-amber middle inline-block ml-2">{{ $answer->comment }}</span>
                                 @if($answer->respondent_id == null)
-                                    <button wire:click="i_had_it({{ $answer->message->id }})" class="dash-btn-action blue">من برداشتم</button>
+                                    <button wire:click="i_had_it({{ $answer->message->id }})" class="dash-btn-action blue float-right">
+                                        <span wire:loading.remove wire:target="i_had_it({{ $answer->message->id }})" class="send-arrow">من برداشتم</span>
+
+                                        <span wire:loading wire:target="i_had_it({{ $answer->message->id }})" style="font-size:12px;">...</span>
+                                    </button>
                                 @endif
                             @elseif($answer->comment && $answer->price != null)
-                                <span class="dash-badge-amber ml-2">{{ $answer->comment }}</span>
+                                <span class="dash-badge-amber middle inline-block ml-2">{{ $answer->comment }}</span>
                             @endif
                             @if($answer->price != 'x' && $answer->price != 'L')
                                 @if($answer->respondent_by_code == 1)
-                                    @if($answer->price != null)<span class="dash-badge dash-badge-blue middle">{{ $answer->price }}</span>@endif
+                                    @if($answer->price != null)<span class="dash-badge ml-1 dash-badge-blue middle float-left">{{ $answer->price }}</span>@endif
                                 @elseif($answer->respondent_by_code == 0)
                                     @if($answer->price != null)<span class="dash-badge dash-badge-green">{{ $answer->price }}</span>@endif
                                 @else
@@ -82,26 +90,40 @@
                                 @endif
                             @endif
                             @if($answer->respondent_by_code && $answer->respondent_id)
-                                <div class="dash-respondent mt-1 inline-block">
+                                <div class="dash-respondent mt-1 inline-block float-right">
                                     <img src="{{ $answer->respondent_profile_image_path }}" alt="" class="middle inline-block">
                                     <span class="middle">{{ $answer->updated_at->diffForHumans(['short' => true, 'syntax' => \Carbon\CarbonInterface::DIFF_ABSOLUTE, 'parts' => 1]) }}</span>
                                     @if($user->id == $answer->respondent_id)
-                                        <button wire:click="save_for_ad_price({{ $answer->message->id }})" class="dash-btn-action blue">➜</button>
-                                        <button wire:click="its_unavailable_on_column_2({{ $answer->message->id }})" class="dash-btn-action red">X</button>
+                                        <button wire:click="save_for_ad_price({{ $answer->message->id }})" class="dash-btn-action blue">
+                                            <span wire:loading.remove wire:target="save_for_ad_price({{ $answer->message->id }})" class="send-arrow">➜</span>
+
+                                            <span wire:loading wire:target="save_for_ad_price({{ $answer->message->id }})" style="font-size:12px;">...</span>
+                                            </button>
+                                        <button wire:click="its_unavailable_on_column_2({{ $answer->message->id }})" class="dash-btn-action red">
+                                            <span wire:loading.remove wire:target="its_unavailable_on_column_2({{ $answer->message->id }})" class="send-arrow">X</span>
+
+                                            <span wire:loading wire:target="its_unavailable_on_column_2({{ $answer->message->id }})" style="font-size:12px;">...</span>
+                                            </button>
                                     @endif
                                 </div>
                             @elseif($answer->respondent_by_code && !$answer->respondent_id)
-                                @if($answer->price == 'x')
-                                    <span class="dash-btn-action red">محصول نا موجود</span>
-                                @elseif($answer->price === 'n')
-                                    <span class="dash-btn-action red">خوب نیست</span>
-                                @elseif($answer->price === 'L')
-                                    <span class="text-slate-500 text-xs">آخرین قیمت سیستم رو بدید</span>
-                                @else
-                                    @if($answer->price != '👎' && $answer->price != '👍' && $answer->price != null)
-                                        <button wire:click="i_had_it({{ $answer->message->id }})" class="dash-btn-action blue">من برداشتم</button>
-                                    @endif
-                                @endif
+                                <div class="float-right">
+                                     @if($answer->price == 'x')
+                                         <span class="dash-btn-action red">محصول نا موجود</span>
+                                     @elseif($answer->price === 'n')
+                                         <span class="dash-btn-action red">خوب نیست</span>
+                                     @elseif($answer->price === 'L')
+                                         <span class="text-slate-500 text-xs">آخرین قیمت سیستم رو بدید</span>
+                                     @else
+                                         @if($answer->price != '👎' && $answer->price != '👍' && $answer->price != null)
+                                             <button wire:click="i_had_it({{ $answer->message->id }})" class="dash-btn-action blue float-right">
+                                                 <span wire:loading.remove wire:target="i_had_it({{ $answer->message->id }})" class="send-arrow">من برداشتم</span>
+
+                                                 <span wire:loading wire:target="i_had_it({{ $answer->message->id }})" style="font-size:12px;">...</span>
+                                                 </button>
+                                         @endif
+                                  @endif
+                                </div>
                             @endif
                         </div>
                     @endforeach

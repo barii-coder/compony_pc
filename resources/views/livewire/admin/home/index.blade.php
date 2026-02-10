@@ -7,7 +7,7 @@
     </div>
 
     @error('prices')
-    <div class="w-full max-w-md mx-auto">
+    <div class="w-full max-w-md mx-auto mt-3">
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 text-center rounded relative">
             <strong class="font-bold">خطا! </strong>
             <span>{{ $message }}</span>
@@ -15,7 +15,7 @@
     </div>
     @enderror
     @error('access')
-    <div class="w-full max-w-md mx-auto">
+    <div class="w-full max-w-md mx-auto mt-3">
         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 text-center rounded relative">
             <strong class="font-bold">خطا! </strong>
             <span>{{ $message }}</span>

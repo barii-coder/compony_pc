@@ -5,7 +5,6 @@ namespace App\Livewire\Admin\Home;
 use App\Models\Answer;
 use App\Models\Message;
 use App\Models\User;
-use http\Env\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -505,7 +504,7 @@ class Index extends Component
             ]);
 
         Message::query()->where('id', $id)
-            ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+            ->update(['chat_in_progress' => '1', 'active_group' => '1']);
         $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
     }
 
@@ -522,7 +521,7 @@ class Index extends Component
         ]);
 
         Message::query()->where('id', $id)
-            ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+            ->update(['chat_in_progress' => '1', 'active_group' => '1']);
     }
 
     public

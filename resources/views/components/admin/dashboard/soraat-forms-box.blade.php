@@ -5,15 +5,12 @@
 .dash-soraat-bar {box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); border-radius: 1rem; background: #fff; overflow: scroll; }
 .dash-soraat-bar .status_text.dash-soraat-title { display: block; float: none; background: linear-gradient(135deg, #334155 0%, #475569 100%); color: #fff; padding: 0.4rem 0.6rem; font-weight: 600; font-size: 0.8rem; text-align: center; line-height: 1.3; }
 /* ردیف کارت‌ها با اسکرول افقی + اسکرول‌بار باریک */
-.dash-soraat-bar .dash-soraat-scroll {display: flex;flex-direction: row;flex-wrap: wrap;overflow-x: hidden;overflow-y: auto;padding: 0.6rem;
-    align-items: stretch;
-    gap: 0.75rem;             /* فاصله بین کارت‌ها */
-}
+.dash-soraat-bar .dash-soraat-scroll {display: flex;flex-direction: row;flex-wrap: wrap;overflow-x: hidden;overflow-y: auto;padding: 0.6rem;align-items: stretch;gap: 0.75rem;}
 .dash-soraat-bar .dash-soraat-scroll::-webkit-scrollbar { height: 5px; }
 .dash-soraat-bar .dash-soraat-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
 .dash-soraat-bar .dash-soraat-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
 .dash-soraat-bar .dash-soraat-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
-.dash-soraat-bar .dash-soraat-card {height: 100%; flex: 0 0 auto; min-width: 250px; max-width: 320px; background: #fff; border-radius: 0.875rem; padding: 0; margin: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; font-size: 12px; overflow: hidden; }
+.dash-soraat-bar .dash-soraat-card {height: 100%; flex: 0 0 auto; min-width: 250px; max-width: 320px; background: #fff; border-radius: 0.875rem; padding: 0; margin: 0;box-shadow: 1px 1px 5px #999; border: 1px solid #e5e7eb; font-size: 12px; overflow: hidden; }
 .dash-soraat-card .dash-soraat-group-title { font-size: 13px; font-weight: 700; color: #1e293b; padding: 0.75rem 1rem; margin: 0; background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); border-bottom: 1px solid #e2e8f0; }
 /* هر سطر آیتم */
 .dash-soraat-card .dash-soraat-row { display: flex; align-items: center; gap: 0.5rem; min-height: 36px; line-height: 1.5; flex-wrap: wrap; border-bottom: 1px solid #f1f5f9; transition: background 0.15s;padding: 3px 5px }
@@ -32,7 +29,7 @@
 .dash-soraat-card .dash-soraat-row input.soraat-input-red { color: #dc2626 !important; }
 .dash-soraat-card .dash-soraat-row input.soraat-input-green { color: #16a34a !important; }
 /* ناحیه دکمه‌ها */
-.dash-soraat-card .dash-soraat-footer { padding: 0.75rem 1rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.dash-soraat-card .dash-soraat-footer { padding: 5px 1rem; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .dash-soraat-card .dash-btn-submit { padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; font-size: 12px; background: linear-gradient(180deg, #2563eb, #1d4ed8); color: #fff; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25); transition: transform 0.1s, box-shadow 0.2s; }
 .dash-soraat-card .dash-btn-submit:hover { box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4); transform: translateY(-1px); }
 .dash-soraat-card .dash-copy-btns { display: flex; gap: 0.35rem; margin-right: auto; }
@@ -107,7 +104,13 @@
                         </div>
                     @endforeach
                     <div class="dash-soraat-footer" style="direction: rtl">
-                        <button type="submit" class="dash-btn-submit">ثبت همه</button>
+                        <button type="submit" class="dash-btn-submit">
+                            <span wire:loading.remove wire:target="submit" class="send-arrow">
+                                ثبت همه</span>
+
+                            <span wire:loading wire:target="submit"
+                                  style="font-size:12px;">...</span>
+                            </button>
                         <div class="dash-copy-btns">
                             <button type="button" onclick="copySoraatGroup('{{ $groupId }}', this, 'all')" title="کپی همه">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>

@@ -28,26 +28,40 @@
                     <div class="flex items-center gap-2">
                         <img width="30" height="30" class="dash-avatar" src="{{ $firstMessage->user->profile_image_path }}" alt="">
                     </div>
-                    <div class="flex gap-1">
-                        <button onclick="copyGroupData('{{ $groupId }}', this, 'codes')" class="dash-btn-sm green" title="کپی فقط کدها">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/></svg>
-                        </button>
-                    </div>
                 </div>
                 @foreach($groupMessages as $message)
                     <div class="dash-item group-item group-item-{{ $groupId }}" data-price="{{ $prices[$message->id] ?? '' }}" wire:key="wait-{{ $message->id }}">
                         <div class="flex items-center justify-between mb-1 gap-2 flex-wrap">
                             <span onclick="copyText(this)" class="cursor-pointer text-xs font-semibold text-slate-600">{{ trim(explode(':', $message->code)[0]) }}</span>
                             <div class="flex gap-1">
-                                <button class="dash-btn-sm red" wire:click="price_is_unavailable({{ $message->id }})">X</button>
-                                <button class="dash-btn-sm green" wire:click="code_answer_update('g', {{ $message->id }})">G</button>
-                                <button class="dash-btn-sm blue" wire:click="code_answer_update('n', {{ $message->id }})">🥲</button>
+                                <button class="dash-btn-sm red" wire:click="price_is_unavailable({{ $message->id }})">
+                                    <span wire:loading.remove wire:target="price_is_unavailable({{ $message->id }})" class="send-arrow">X</span>
+
+                                    <span wire:loading wire:target="price_is_unavailable({{ $message->id }})" style="font-size:12px;">...</span>
+                                    </button>
+                                <button class="dash-btn-sm green" wire:click="code_answer_update('g', {{ $message->id }})">
+                                    <span wire:loading.remove wire:target="code_answer_update('g', {{ $message->id }})" class="send-arrow">G</span>
+
+                                    <span wire:loading wire:target="code_answer_update('g', {{ $message->id }})" style="font-size:12px;">...</span>
+                                    </button>
+                                <button class="dash-btn-sm blue" wire:click="code_answer_update('n', {{ $message->id }})">
+                                    <span wire:loading.remove wire:target="code_answer_update('n', {{ $message->id }})" class="send-arrow">🥲</span>
+
+                                    <span wire:loading wire:target="code_answer_update('n', {{ $message->id }})" style="font-size:12px;">...</span>
+                                    </button>
                             </div>
                             <span class="text-red-600 cursor-pointer text-xs">{{ $message->text }}</span>
                         </div>
                         <div class="dash-price-wrap">
                             <input type="text" placeholder="قیمت" wire:model.defer="prices.{{ $message->id }}" wire:keydown.enter="submit_answer_on3({{ $message->id }})">
-                            <button type="button" wire:click="submit_answer_on3({{ $message->id }})" class="dash-price-btn">➤</button>
+                            <button type="button" wire:click="submit_answer_on3({{ $message->id }})" class="dash-price-btn">
+
+                                <span wire:loading.remove wire:target="submit_answer_on3({{ $message->id }})" class="send-arrow">➤</span>
+
+                                <span wire:loading wire:target="submit_answer_on3({{ $message->id }})"
+                                      style="font-size:12px;">...</span>
+
+                            </button>
                         </div>
                     </div>
                 @endforeach

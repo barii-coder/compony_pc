@@ -56,7 +56,7 @@
         </div>
     </div>
     <div id="chat-input">
-        <textarea type="text" wire:model="test" id="messageInput" wire:keydown.enter.prevent="submit" placeholder="پیام..." dir="rtl"></textarea>
+        <textarea type="text" wire:model="test" id="messageInput" wire:keydown.enter.prevent="submit" placeholder="پیام..." dir="ltr"></textarea>
         <div id="previewContainer"></div>
         <button type="submit"
                 wire:loading.attr="disabled"

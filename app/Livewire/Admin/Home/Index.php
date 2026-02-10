@@ -234,6 +234,7 @@ class Index extends Component
                 'buyer_name' => $this->buyer_name,
                 'group_id' => $code,
                 'chat_in_progress' => "$check",
+                'past_chat_progress' => '2',
             ]);
 
             if ($check == 1 && empty($priceParts)) {
@@ -276,6 +277,7 @@ class Index extends Component
         Message::query()->where('id', $message_id)->update(
             [
                 'chat_in_progress' => '1',
+                'past_chat_progress' => '2',
                 'active_group' => '0',
             ]
         );
@@ -310,7 +312,11 @@ class Index extends Component
             ]);
 
             Message::query()->where('id', $id)
-                ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+                ->update([
+                    'chat_in_progress' => '1',
+                    'active_group' => '0',
+                    'past_chat_progress' => '2',
+                ]);
 
             $this->prices = [];
         } else {
@@ -321,7 +327,10 @@ class Index extends Component
             ]);
 
             Message::query()->where('id', $id)
-                ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+                ->update([
+                    'chat_in_progress' => '1',
+                    'past_chat_progress' => '2',
+                    'active_group' => '0']);
 
             $this->prices = [];
         }
@@ -345,7 +354,10 @@ class Index extends Component
             ]);
 
             Message::query()->where('id', $id)
-                ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+                ->update([
+                    'chat_in_progress' => '1',
+                    'past_chat_progress' => '3',
+                    'active_group' => '0']);
 
             $this->prices = [];
         } else {
@@ -355,7 +367,10 @@ class Index extends Component
             ]);
 
             Message::query()->where('id', $id)
-                ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+                ->update([
+                    'chat_in_progress' => '1',
+                    'past_chat_progress' => '3',
+                    'active_group' => '0']);
 
             $this->prices = [];
         }
@@ -411,7 +426,10 @@ class Index extends Component
         );
 
         Message::query()->where('id', $messageId)
-            ->update(['chat_in_progress' => '1', 'active_group' => '1']);
+            ->update([
+                'chat_in_progress' => '1',
+                'past_chat_progress' => '2',
+                'active_group' => '1']);
 
         // پاک کردن انتخاب‌ها و کامنت
         $this->selectedCodes = [];
@@ -450,7 +468,10 @@ class Index extends Component
         );
 
         Message::query()->where('id', $messageId)
-            ->update(['chat_in_progress' => '1', 'active_group' => '1']);
+            ->update([
+                'chat_in_progress' => '1',
+                'past_chat_progress' => '2',
+                'active_group' => '1']);
 
         // پاک کردن input کامنت فقط وقتی ثبت شد
         if ($comment) {
@@ -466,6 +487,7 @@ class Index extends Component
     {
         Message::query()->where('id', $messageId)->update([
             'chat_in_progress' => '3',
+            'past_chat_progress' => '1',
             'text' => null,
         ]);
     }
@@ -477,6 +499,7 @@ class Index extends Component
 
         Message::query()->where('id', $id)->update([
             'chat_in_progress' => '0',
+            'past_chat_progress' => '1',
             'active_group' => '0',
             'final_price' => $answer->price,
             'updated_at' => now(),
@@ -504,7 +527,10 @@ class Index extends Component
             ]);
 
         Message::query()->where('id', $id)
-            ->update(['chat_in_progress' => '1', 'active_group' => '1']);
+            ->update([
+                'chat_in_progress' => '1',
+                'past_chat_progress' => '2',
+                'active_group' => '0']);
         $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
     }
 
@@ -521,7 +547,10 @@ class Index extends Component
         ]);
 
         Message::query()->where('id', $id)
-            ->update(['chat_in_progress' => '1', 'active_group' => '1']);
+            ->update([
+                'chat_in_progress' => '1',
+                'past_chat_progress' => '3',
+                'active_group' => '1']);
     }
 
     public
@@ -538,15 +567,19 @@ class Index extends Component
         Message::query()->where('id', $messageId)
             ->update([
                 'chat_in_progress' => '1',
+                'past_chat_progress' => '1',
             ]);
     }
 
     public
     function back($group_id)
     {
+        $groupFirstMessage = Message::query()->where('group_id', $group_id)->first();
+        $chat_progress = $groupFirstMessage->past_chat_progress;
         Message::query()->where('group_id', $group_id)
             ->update([
-                'chat_in_progress' => '2',
+                'chat_in_progress' => $chat_progress,
+                'past_chat_progress' => '1',
                 'active_group' => '1',
             ]);
     }
@@ -569,7 +602,10 @@ class Index extends Component
         ]);
 
         Message::query()->where('id', $messageId)
-            ->update(['chat_in_progress' => '1', 'active_group' => '0']);
+            ->update([
+                'chat_in_progress' => '1',
+                'past_chat_progress' => '3',
+                'active_group' => '0']);
     }
 
     public
@@ -577,6 +613,7 @@ class Index extends Component
     {
         Message::query()->where('id', $messageId)->update([
             'chat_in_progress' => '3',
+            'past_chat_progress' => '1',
             'text' => 'قیمت موجود نمیباشد',
         ]);
     }
@@ -610,6 +647,7 @@ class Index extends Component
 
             Message::where('id', $messageId)->update([
                 'chat_in_progress' => 1,
+                'past_chat_progress' => '2',
                 'active_group' => '0',
                 'final_price' => $price,
             ]);
@@ -617,6 +655,7 @@ class Index extends Component
 
         Message::where('group_id', $group_id)->update([
             'chat_in_progress' => 1,
+            'past_chat_progress' => '2',
             'active_group' => '0',
         ]);
 
@@ -646,7 +685,7 @@ class Index extends Component
         $messages = Message::query()->where('group_id', $group_id)->get();
         foreach ($messages as $message) {
             foreach ($message->answers as $answer) {
-                $message->update(['chat_in_progress' => '0', 'active_group' => '0', 'final_price' => $answer->price]);
+                $message->update(['chat_in_progress' => '0','past_chat_progress' => '1', 'active_group' => '0', 'final_price' => $answer->price]);
             }
         }
     }
@@ -691,6 +730,7 @@ class Index extends Component
             'question' => $this->hasMoreThanThreePersianLetters($text) ? '1' : '0',
             'group_id' => $groupId,
             'chat_in_progress' => '2',
+            'past_chat_progress' => '2',
         ]);
 
         $this->test = ''; // خالی شدن textarea
@@ -747,7 +787,7 @@ class Index extends Component
 
         $answers = Answer::query()
             ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
-            ->orderBy('message_id','desc')
+            ->orderBy('updated_at','desc')
             ->get();
 
         $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);

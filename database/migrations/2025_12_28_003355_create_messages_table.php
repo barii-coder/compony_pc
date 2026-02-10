@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('group_id');
             $table->string('active_group');
             $table->string('chat_in_progress');
+            $table->string('past_chat_progress')->nullable();
             $table->timestamp('previous_updated_at')->nullable();
             $table->string('final_price')->nullable();
             $table->boolean('needs_follow_up')->default(false)->index();

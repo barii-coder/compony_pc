@@ -25,6 +25,7 @@
 
     {{-- باکس چت‌های در جریان --}}
     <x-admin.dashboard.chats-in-progress-box
+        wire:ignore
         :groups="$groups"
         :messageCounts="$messageCounts"
         :messageTimesByCode="$messageTimesByCode"
@@ -155,16 +156,6 @@
             navigator.clipboard.writeText(result.join('\n'));
             showCopySuccess(btn);
         }
-
-        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-            Notification.requestPermission();
-        }
-
-        window.addEventListener('answer-submitted', event => {
-            if (Notification.permission === 'granted') {
-                new Notification("ثبت پاسخ", {body: event.detail.message});
-            }
-        });
 
         const lightbox = document.querySelector(".lightbox");
         const lightboxImg = document.getElementById("lightbox-img");

@@ -24,7 +24,7 @@
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center">
-<livewire:scripts />
+{{--<livewire:scripts />--}}
 {{$slot}}
 </body>
 </html>

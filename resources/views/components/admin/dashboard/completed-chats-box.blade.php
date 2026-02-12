@@ -17,7 +17,7 @@
 .dash-box-done .dash-time { font-size: 10px; color: #64748b; }
 </style>
 
-<div class="dash-box-done float-left m-2 w-[18%] max-h overflow-auto">
+<div class="dash-box-done float-left m-2 w-[14%] max-h overflow-auto">
     <div class="dash-header sticky top-0 z-10">تکمیل شده</div>
     <ul class="text-xs space-y-2 p-2" style="list-style: none;">
         @foreach($ended_chats->groupBy('group_id') as $groupId => $groupChats)

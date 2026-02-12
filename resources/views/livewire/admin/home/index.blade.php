@@ -50,7 +50,9 @@
     <x-admin.dashboard.completed-chats-box :ended_chats="$ended_chats"/>
 
     {{-- صورت ها --}}
-    <x-admin.dashboard.soraat-forms-box :productsGrouped="$productsGrouped"/>
+    @if($user->id == 5 or $user->id == 1)
+        <x-admin.dashboard.soraat-forms-box :productsGrouped="$productsGrouped"/>
+    @endif
 
     {{-- فرم ارسال پیام --}}
     <x-admin.dashboard.chat-submit-form/>

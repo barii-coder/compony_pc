@@ -158,7 +158,7 @@
         color: #fff;
     }
 
-    .dash-box-pending .dash-badge-amber {
+ .dash-badge-amber {
         background: #fef3c7;
         color: #92400e;
         padding: 0.25rem 0.5rem;

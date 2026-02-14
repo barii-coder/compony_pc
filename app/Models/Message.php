@@ -17,4 +17,10 @@ class Message  extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function latestAnswer()
+    {
+        return $this->hasOne(Answer::class, 'message_id')->latest();
+    }
+
 }

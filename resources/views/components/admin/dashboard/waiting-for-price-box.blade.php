@@ -33,8 +33,25 @@
                     <div class="dash-item group-item group-item-{{ $groupId }}" data-price="{{ $prices[$message->id] ?? '' }}" wire:key="wait-{{ $message->id }}">
                         <div class="flex items-center justify-between mb-1 gap-2 flex-wrap">
                             <span onclick="copyText(this)" class="cursor-pointer text-xs font-semibold text-slate-600">{{ trim(explode(':', $message->code)[0]) }}</span>
-                            <span>مثلا اینجا اگه کامنتی بود کامنت رو نشون بده</span>
+                            @if($message->latestAnswer?->comment)
+                                <span class="dash-badge-amber middle inline-block ml-2">
+        {{ $message->latestAnswer->comment }}
+    </span>
+                            @endif
                             <div class="flex gap-1">
+                                @php
+                                    $lastAnswer = $message->answers->last();
+                                @endphp
+
+                                @if($lastAnswer && $lastAnswer->respondent_id)
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <img
+                                            src="{{ $lastAnswer->respondent_profile_image_path }}"
+                                            class="w-6 h-6 rounded-md"
+                                        >
+                                    </div>
+                                @endif
+
                                 <button class="dash-btn-sm red" wire:click="price_is_unavailable({{ $message->id }})">
                                     <span wire:loading.remove wire:target="price_is_unavailable({{ $message->id }})" class="send-arrow">X</span>
 

@@ -262,6 +262,14 @@ class Index extends Component
 
     public function submit_comment($message_id)
     {
+
+        $comment = $this->comments[$message_id] ?? null;
+
+        if (!$comment) {
+            return;
+        }
+
+
         $user = Auth::user();
         $this->checkAccess($user->id);
         Answer::query()->updateOrCreate(
@@ -281,11 +289,13 @@ class Index extends Component
                 'active_group' => '0',
             ]
         );
-        $this->comments[$message_id] = null;
-        $this->dispatch('answerSubmitted', [
-            'userId' => $user->id,
-            'message' => "پاسخ کاربر {$user->name} ثبت شد!"
-        ]);
+//        $this->comments[$message_id] = null;
+
+        // 👇 خیلی مهم
+        unset($this->comments[$message_id]);
+
+        // برای اطمینان بیشتر
+        $this->resetValidation();
 
     }
 
@@ -794,7 +804,10 @@ class Index extends Component
             ->sortByDesc('updated_at')
             ->groupBy('group_id');
 
-        $wait_for_price = $allMessages->where('chat_in_progress', '3')->sortByDesc('updated_at');
+        $wait_for_price = Message::with(['answers','user'])
+            ->where('chat_in_progress', '3')
+            ->orderByDesc('updated_at')
+            ->get();
 
         $ended_chats = $allMessages->where('chat_in_progress', '0')->sortByDesc('updated_at');
 

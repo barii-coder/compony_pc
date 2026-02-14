@@ -287,22 +287,21 @@
                             </button>
                         </div>
                     <div class="dash-group-actions">
-                        <button wire:click="back('{{ $groupId }}')" class="dash-btn-icon red" title="برگشت">
-                            <span wire:loading.remove wire:target="back('{{ $groupId }}')" class="send-arrow">
-                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                      stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
-                            </span>
-
-                            <span wire:loading wire:target="back('{{ $groupId }}')" style="font-size:12px;">...</span>
-                        </button>
-
                     </div>
                 </div>
                 <div class="p-1 w-full">
                     @foreach($groupAnswers as $answer)
                         <div class="dash-answer-item" wire:key="answer-{{ $answer->id }}">
                             <img src="{{ $answer->message->image_url }}" alt="" class="gallery-img">
+                            <button wire:click="messageBack('{{ $answer->message_id }}')" class="dash-btn-icon red middle" title="برگشت">
+                            <span wire:loading.remove wire:target="messageBack('{{ $answer->message_id }}')" class="send-arrow">
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none"
+                                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
+                            </span>
+
+                                <span wire:loading wire:target="messageBack('{{ $answer->message_id }}')" style="font-size:12px;">...</span>
+                            </button>
                             <p onclick="copyText(this)" class=" group-code mr-1 group-{{ $groupId }} dash-code-tag"
                                data-price="{{ $answer->price }}">{{ trim(explode(':', $answer->message->code)[0]) }}</p>
                             @if($answer->comment && $answer->price == null)

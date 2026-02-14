@@ -332,7 +332,7 @@
                         @php
                             $parts = explode(':', $message->code);
                         @endphp
-                        <li id="message-{{ $message->id }}" class="dash-msg-item">
+                        <li id="message-{{ $message->id }}" class="dash-msg-item" wire:key="message-{{ $message->id }}">
                             <img src="{{ $message->image_url }}" alt="" class="gallery-img" style="border-radius: 6px;">
                             <p onclick="copyText(this)"
                                class="chat-code chat-group-{{ $groupId }} dash-code-line inline-block">{{ trim($parts[0]) }}</p>
@@ -364,12 +364,17 @@
                                     @endforeach
                                 </div>
                                 <div class="dash-comment-price-row">
-                                    <input type="text" wire:model="comments.{{ $message->id }}" dir="rtl"
-                                           wire:keydown.enter="submit_comment({{ $message->id }})" wire:ignore
+                                    <input type="text" wire:model.debounce.500ms="comments.{{ $message->id }}" dir="rtl"
+                                           wire:keydown.enter="submit_comment({{ $message->id }})"
                                            placeholder="کامنت" class="dash-comment-input">
                                     <div class="dash-input-wrap">
-                                        <input type="text" wire:model="prices.{{ $message->id }}" placeholder="قیمت"
-                                               wire:ignore wire:keydown.enter="submit_answer({{ $message->id }})">
+{{--                                        @if(isset($parts[1]) && trim($parts[1]) !== '')--}}
+{{--                                            @php--}}
+{{--                                            $inputPricevalue = trim($parts[1]);--}}
+{{--                                            @endphp--}}
+{{--                                        @endif--}}
+                                        <input type="text" wire:model.debounce.500ms="prices.{{ $message->id }}"
+                                               wire:keydown.enter="submit_answer({{ $message->id }})">
                                         <button type="button" wire:click="submit_answer({{ $message->id }})"
                                                 class="dash-btn-submit"><span class="dash-submit-arrow">
                                                             <span wire:loading.remove
@@ -404,12 +409,12 @@
                                     @endforeach
                                 </div>
                                 <div class="dash-comment-price-row">
-                                    <input type="text" wire:model="comments.{{ $message->id }}" dir="rtl"
-                                           wire:keydown.enter="submit_comment({{ $message->id }})" wire:ignore
+                                    <input type="text" wire:model.debounce.500ms="comments.{{ $message->id }}" dir="rtl"
+                                           wire:keydown.enter="submit_comment({{ $message->id }})"
                                            placeholder="کامنت" class="dash-comment-input">
                                     <div class="dash-input-wrap">
-                                        <input type="text" wire:model="prices.{{ $message->id }}" placeholder="قیمت"
-                                               wire:ignore wire:keydown.enter="submit_answer({{ $message->id }})">
+                                        <input type="text" wire:model.debounce.500ms="prices.{{ $message->id }}" placeholder="قیمت"
+                                               wire:keydown.enter="submit_answer({{ $message->id }})">
                                         <button type="button" wire:click="submit_answer({{ $message->id }})"
                                                 class="dash-btn-submit"><span class="dash-submit-arrow">
                                                             <span wire:loading.remove

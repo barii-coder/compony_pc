@@ -572,11 +572,24 @@ class Index extends Component
     }
 
     public
-    function back($group_id)
+    function groupBack($group_id)
     {
         $groupFirstMessage = Message::query()->where('group_id', $group_id)->first();
         $chat_progress = $groupFirstMessage->past_chat_progress;
         Message::query()->where('group_id', $group_id)
+            ->update([
+                'chat_in_progress' => $chat_progress,
+                'past_chat_progress' => '1',
+                'active_group' => '1',
+            ]);
+    }
+
+    public
+    function messageBack($messageId)
+    {
+        $message = Message::query()->where('id', $messageId)->first();
+        $chat_progress = $message->past_chat_progress;
+        Message::query()->where('id', $messageId)
             ->update([
                 'chat_in_progress' => $chat_progress,
                 'past_chat_progress' => '1',
@@ -685,7 +698,7 @@ class Index extends Component
         $messages = Message::query()->where('group_id', $group_id)->get();
         foreach ($messages as $message) {
             foreach ($message->answers as $answer) {
-                $message->update(['chat_in_progress' => '0','past_chat_progress' => '1', 'active_group' => '0', 'final_price' => $answer->price]);
+                $message->update(['chat_in_progress' => '0', 'past_chat_progress' => '1', 'active_group' => '0', 'final_price' => $answer->price]);
             }
         }
     }
@@ -787,7 +800,7 @@ class Index extends Component
 
         $answers = Answer::query()
             ->whereHas('message', fn($q) => $q->where('chat_in_progress', '1'))
-            ->orderBy('updated_at','desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
 
         $answersGrouped = $answers->groupBy(fn($answer) => $answer->message->group_id);

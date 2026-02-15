@@ -44,14 +44,14 @@
     <div id="chat-body">
         <div class="msg bot">
             <div class="chat-options">
-                <label class="chat-option"><input wire:model="buser" type="checkbox"><span class="chat-option-label">مصرف کننده</span><span class="chat-option-dot"></span></label>
-                <label class="chat-option"><input wire:model="dalal" type="checkbox"><span class="chat-option-label">دلال</span><span class="chat-option-dot"></span></label>
-                <label class="chat-option"><input wire:model="hamkar" type="checkbox"><span class="chat-option-label">همکار</span><span class="chat-option-dot"></span></label>
-                <label class="chat-option"><input wire:model="tamirkar" type="checkbox"><span class="chat-option-label">تعمیرکار</span><span class="chat-option-dot"></span></label>
-                <label class="chat-option"><input wire:model="moshtaryg" type="checkbox"><span class="chat-option-label">مشتری جدید</span><span class="chat-option-dot"></span></label>
+                <label class="chat-option"><input wire:model.live="userType" type="radio" value="مصرف کننده"><span class="chat-option-label">مصرف کننده</span><span class="chat-option-dot"></span></label>
+                <label class="chat-option"><input wire:model.live="userType" type="radio" value="دلال"><span class="chat-option-label">دلال</span><span class="chat-option-dot"></span></label>
+                <label class="chat-option"><input wire:model.live="userType" type="radio" value="همکار"><span class="chat-option-label">همکار</span><span class="chat-option-dot"></span></label>
+                <label class="chat-option"><input wire:model.live="userType" type="radio" value="تعمیرکار"><span class="chat-option-label">تعمیرکار</span><span class="chat-option-dot"></span></label>
+                <label class="chat-option"><input wire:model.live="userType" type="radio" value="مشتری جدید"><span class="chat-option-label">مشتری جدید</span><span class="chat-option-dot"></span></label>
             </div>
-            <div class="chat-buyer-wrap" wire:poll.1ms>
-                <input wire:model="buyer_name" type="text" placeholder="نام فروشنده / توضیحات (اختیاری)" dir="rtl">
+            <div class="chat-buyer-wrap">
+                <input wire:model="userType" type="text" placeholder="نام فروشنده / توضیحات (اختیاری)" dir="rtl">
             </div>
         </div>
     </div>

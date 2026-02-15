@@ -141,15 +141,19 @@
         margin-right: 0.35rem;
     }
 
-    .edit-price-btn{
-        background:none;
-        border:none;
-        font-size:11px;
-        cursor:pointer;
-        margin-right:4px;
-        opacity:.6;
+    .edit-price-btn {
+        background: none;
+        border: none;
+        font-size: 11px;
+        cursor: pointer;
+        margin-right: 4px;
+        opacity: .6;
     }
-    .edit-price-btn:hover{ opacity:1; transform:scale(1.1); }
+
+    .edit-price-btn:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
 
     /* ردیف دکمه‌های کد */
     .dash-box-chats .dash-code-btns {
@@ -326,12 +330,14 @@
                         @endif
                         @php
                             $isEmpty = preg_match('/:\s*-\s*$/', trim($message->code));
-                            $hasNoColon = strpos($message->code, ':') === false; $count = $messageCounts[$message->code] ?? 0;
+                            $hasNoColon = strpos($message->code, ':') === false;
+//                            $count = $messageCounts[$message->code] ?? 0;
                             $hasPrice = !$hasNoColon && !$isEmpty;
-                        @endphp
-                        @php
                             $parts = explode(':', $message->code);
-                        @endphp
+                            $mainCode = trim($parts[0]);
+                                $count = $messageCounts[$mainCode] ?? 0;
+                             $times = $messageTimesByCode[$mainCode] ?? [];
+                            @endphp
                         <li id="message-{{ $message->id }}" class="dash-msg-item" wire:key="message-{{ $message->id }}">
                             <img src="{{ $message->image_url }}" alt="" class="gallery-img" style="border-radius: 6px;">
                             <p onclick="copyText(this)"
@@ -352,7 +358,8 @@
                                 </button>
                             @endif
 
-                            <div id="edit-box-{{ $message->id }}" class="edit-price-box" style="display:none;" wire:ignore>
+                            <div id="edit-box-{{ $message->id }}" class="edit-price-box" style="display:none;"
+                                 wire:ignore>
                                 <div class="dash-code-btns">
                                     @foreach(['a','k','h','g','x','L', $message->question == '1' ? '👍' : null, $message->question == '1' ? '👎' : null] as $c)
                                         @if($c)
@@ -394,10 +401,11 @@
                             </div>
 
                             @if($count > 1)
-                                <span class="dash-time-badge">( {{ implode(' ، ', $messageTimesByCode[$message->code] ?? []) }} )</span>
+                                {{$times[0] = ''}}
+                                <span class="dash-time-badge">( {{ implode(' ، ', $times) }} )</span>
                             @endif
 
-                            @if($isEmpty == 1 || $hasNoColon == true)
+                        @if($isEmpty == 1 || $hasNoColon == true)
                                 <div class="dash-code-btns">
                                     @foreach(['a','k','h','g','x','L', $message->question == '1' ? '👍' : null, $message->question == '1' ? '👎' : null] as $c)
                                         @if($c)
@@ -413,7 +421,8 @@
                                            wire:keydown.enter="submit_comment({{ $message->id }})"
                                            placeholder="کامنت" class="dash-comment-input">
                                     <div class="dash-input-wrap">
-                                        <input type="text" wire:model.debounce.500ms="prices.{{ $message->id }}" placeholder="قیمت"
+                                        <input type="text" wire:model.debounce.500ms="prices.{{ $message->id }}"
+                                               placeholder="قیمت"
                                                wire:keydown.enter="submit_answer({{ $message->id }})">
                                         <button type="button" wire:click="submit_answer({{ $message->id }})"
                                                 class="dash-btn-submit"><span class="dash-submit-arrow">

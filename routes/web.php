@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use \App\Livewire\Admin\Home\Index;
 
 Route::get('/', Index::class)->name('home');
+Route::get('/forkhepeli', \App\Livewire\Testlove::class)->name('forkhepeli');
 
 Route::get('/test-admin-broadcast', function () {
     event(new \App\Events\AdminNotificationEvent('تست alert ⚡'));

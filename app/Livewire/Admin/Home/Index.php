@@ -34,13 +34,8 @@ class Index extends Component
 
     public $test;
 
-    public $buser;
+    public $userType = null;
 
-    public $buyer_name;
-    public $dalal;
-    public $hamkar;
-    public $tamirkar;
-    public $moshtaryg;
     public $checkbox;
     public $aa;
     public $prices = [];
@@ -170,22 +165,6 @@ class Index extends Component
         if ($this->isSubmitting) return;
         $this->isSubmitting = true;
 
-        if (empty(trim($this->buyer_name))) {
-
-            $selected = [];
-
-            if ($this->buser) $selected[] = 'مصرف کننده';
-            if ($this->dalal) $selected[] = 'دلال';
-            if ($this->hamkar) $selected[] = 'همکار';
-            if ($this->tamirkar) $selected[] = 'تعمیرکار';
-            if ($this->moshtaryg) $selected[] = 'مشتری جدید';
-
-            // اگر حداقل یکی تیک خورده بود
-            if (!empty($selected)) {
-                $this->buyer_name = implode(' - ', $selected);
-            }
-        }
-
         $user = Auth::user();
 
         $lines = explode("\n", $this->test);
@@ -231,7 +210,7 @@ class Index extends Component
                 'active_group' => 1,
                 'question' => $value,
                 'type' => 'text',
-                'buyer_name' => $this->buyer_name,
+                'buyer_name' => $this->userType,
                 'group_id' => $code,
                 'chat_in_progress' => "$check",
                 'past_chat_progress' => '2',
@@ -831,22 +810,28 @@ class Index extends Component
         $this->messageTimesByCode = Message::select('code', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get()
-            ->groupBy('code')
+            ->map(function($item) {
+                $mainCode = explode(':', $item->code)[0]; // گرفتن mainCode
+                $item->main_code = $mainCode;
+                return $item;
+            })
+            ->groupBy('main_code')
             ->map(function ($items) use ($now) {
                 return $items->map(function ($item) use ($now) {
                     $minutes = round($item->created_at->diffInMinutes($now));
-                    if ($minutes < 60) {
-                        return $minutes . 'm';
-                    }
-
-                    if ($minutes < 1440) {
-                        return floor($minutes / 60) . 'h';
-                    }
-
+                    if ($minutes < 60) return $minutes . 'm';
+                    if ($minutes < 1440) return floor($minutes / 60) . 'h';
                     return floor($minutes / 1440) . 'd';
                 })->toArray();
             })
             ->toArray();
+
+        $codes = Message::pluck('code')->map(function($code){
+            return explode(':', $code)[0];
+        })->toArray();
+
+        $this->messageCounts = array_count_values($codes);
+
 
         $groupReadyForCheck = Message::select('group_id')
             ->selectRaw('SUM(active_group) as active_count')

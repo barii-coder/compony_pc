@@ -97,7 +97,7 @@
                                                 <div class="inline-block">
                                                     {{ $code[0] }} :
                                                 </div>
-                                                <div class="text-[11px] text-gray-500 inline-block float-right">
+                                                <div class="text-[11px] text-gray-500 inline-block ">
                                                     {{ $price !== null && $price !== '' ? $price : 'در حال بررسی' }}
                                                 </div>
                                             </div>
@@ -116,7 +116,6 @@
                                      data-message-id="{{ $message->id }}"
                                      data-date="{{ $date }}">
 
-
                                     <div
                                         class="{{ $message->user_id === auth()->id() ? 'ml-auto bg-blue-100' : 'bg-gray-100' }} min-h-[70px] p-2 rounded-lg">
 
@@ -126,28 +125,25 @@
                                             $code = explode(':', $message->code);
                                         @endphp
 
-                                        <div class="text-sm">
-                                            <div class="flex justify-between items-center">
-                                                <p onclick="copyText(this)" class="cursor-pointer">
-                                                    {{ $code[0] }}
-                                                </p>
-
-                                                <button onclick="copySingleMessage('{{ $message->id }}', this)"
-                                                        class="copy-btn p-1 rounded-full hover:bg-green-500/20 transition ml-2"
-                                                        title="کپی این پیام">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                                         fill="#000" viewBox="0 0 24 24">
-                                                        <path
-                                                            d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
-                                                    </svg>
-                                                </button>
+                                        <div class="block">
+                                            <p onclick="copyText(this)" class="cursor-pointer inline-block">
+                                                {{ $code[0] }}
+                                            </p>
+                                            <span> : </span>
+                                            <div class="text-[11px] text-gray-500 inline-block">
+                                                {{ $price !== null && $price !== '' ? $price : 'در حال بررسی' }}
                                             </div>
 
-                                            <div class="text-xs text-gray-600 float-right">
-                                                <div class="text-[11px] text-gray-500">
-                                                    {{ $price !== null && $price !== '' ? $price : 'در حال بررسی' }}
-                                                </div>
-                                            </div>
+                                            <button onclick="copySingleMessage('{{ $message->id }}', this)"
+                                                    class="copy-btn p-1 rounded-full hover:bg-green-500/20 transition ml-2 float-right"
+                                                    title="کپی این پیام">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                     fill="#000" viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
+                                                </svg>
+                                            </button>
+
                                             <img src="{{$message->image_url}}" class="gallery-img"
                                                  style="width: 40px;border-radius: 0">
                                         </div>

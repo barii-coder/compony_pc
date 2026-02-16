@@ -51,7 +51,7 @@
                 <label class="chat-option"><input wire:model.live="userType" type="radio" value="مشتری جدید"><span class="chat-option-label">مشتری جدید</span><span class="chat-option-dot"></span></label>
             </div>
             <div class="chat-buyer-wrap">
-                <input wire:model="userType" type="text" placeholder="نام فروشنده / توضیحات (اختیاری)" dir="rtl">
+                <input wire:model="userType" id="buyerNameInput" onclick="buyerNameValue()" type="text" placeholder="نام فروشنده / توضیحات (اختیاری)" dir="rtl">
             </div>
         </div>
     </div>
@@ -74,3 +74,10 @@
         </label>
     </div>
 </form>
+
+<script>
+    let input = document.getElementById("buyerNameInput")
+    function buyerNameValue(){
+        input.value += " - ";
+    }
+</script>

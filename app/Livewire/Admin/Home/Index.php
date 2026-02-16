@@ -363,7 +363,6 @@ class Index extends Component
 
             $this->prices = [];
         }
-        $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
     }
 
     public

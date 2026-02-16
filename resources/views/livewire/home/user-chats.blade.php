@@ -77,6 +77,17 @@
                                 </svg>
                             </button>
 
+                            <button onclick="copyCodesOnly(this)"
+                                    class="copy-btn p-1 rounded-full float-right hover:bg-green-500/20 transition mb-5"
+                                    title="کپی فقط کد ها">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     viewBox="0 0 24 24">
+                                    <path
+                                        d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                                </svg>
+                            </button>
+
+
                             @foreach($group as $message)
                                 @if($message->chat_in_progress == "0")
                                     <div class="message-item hidden mb-2"
@@ -95,9 +106,13 @@
 
                                             <div class="text-sm w-full">
                                                 <div class="inline-block">
-                                                    {{ $code[0] }} :
+                                                    <p data-code onclick="copyText(this)"
+                                                       class="cursor-pointer inline-block">
+                                                        {{ $code[0] }}
+                                                    </p>
                                                 </div>
-                                                <div class="text-[11px] text-gray-500 inline-block ">
+                                                <div class="text-[11px] text-gray-500 inline-block " data-price>
+                                                    <span class="m-1">:</span>
                                                     {{ $price !== null && $price !== '' ? $price : 'در حال بررسی' }}
                                                 </div>
                                             </div>
@@ -126,11 +141,11 @@
                                         @endphp
 
                                         <div class="block">
-                                            <p onclick="copyText(this)" class="cursor-pointer inline-block">
+                                            <p data-code onclick="copyText(this)" class="cursor-pointer inline-block">
                                                 {{ $code[0] }}
                                             </p>
                                             <span> : </span>
-                                            <div class="text-[11px] text-gray-500 inline-block">
+                                            <div class="text-[11px] text-gray-500 inline-block" data-price>
                                                 {{ $price !== null && $price !== '' ? $price : 'در حال بررسی' }}
                                             </div>
 
@@ -143,6 +158,17 @@
                                                         d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
                                                 </svg>
                                             </button>
+                                            <button onclick="copyCodesOnly(this)"
+                                                    class="copy-btn p-1 rounded-full hover:bg-green-500/20 transition ml-2 float-right"
+                                                    title="کپی فقط کد ها">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                     fill="currentColor"
+                                                     viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                                                </svg>
+                                            </button>
+
 
                                             <img src="{{$message->image_url}}" class="gallery-img"
                                                  style="width: 40px;border-radius: 0">
@@ -159,6 +185,35 @@
         </div>
 
         <script>
+
+            function copyCodesOnly(btn) {
+                let codes = [];
+
+                // 1️⃣ بررسی می‌کنیم آیا دکمه داخل یک گروه است
+                const group = btn.closest('.chat-group');
+
+                if (group) {
+                    // اگر داخل گروه بود، فقط کدهای پیام‌های داخل گروه را بگیریم
+                    group.querySelectorAll('[data-code]').forEach(el => {
+                        const code = el.innerText.trim();
+                        if (code) codes.push(code);
+                    });
+                } else {
+                    // اگر داخل پیام تکی بود، فقط کد همان پیام را بگیریم
+                    const message = btn.closest('.message-item');
+                    if (message) {
+                        const codeEl = message.querySelector('[data-code]');
+                        if (codeEl) codes.push(codeEl.innerText.trim());
+                    }
+                }
+
+                if (codes.length === 0) return;
+
+                navigator.clipboard.writeText(codes.join('\n'))
+                    .then(() => showCopySuccess(btn))
+                    .catch(err => console.error("خطا در کپی فقط کدها:", err));
+            }
+
 
             const lightbox = document.querySelector(".lightbox");
             const lightboxImg = document.getElementById("lightbox-img");
@@ -184,7 +239,7 @@
                 if (!messageEl) return;
 
                 const code = messageEl.querySelector('p')?.innerText.trim() || '';
-                const priceEl = messageEl.querySelector('.text-xs');
+                const priceEl = messageEl.querySelector('[data-price]');
                 let price = priceEl?.innerText.trim() || '';
 
                 // اگر هنوز در حال بررسی است، به عنوان "در حال بررسی" کپی شود
@@ -193,11 +248,7 @@
                 const textToCopy = `${code} : ${price}`;
 
                 navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                        const oldBg = btn.style.backgroundColor;
-                        btn.style.backgroundColor = '#16a34a';
-                        setTimeout(() => btn.style.backgroundColor = oldBg || '#22c55e', 1000);
-                    })
+                    .then(() => showCopySuccess(btn))
                     .catch(err => console.error("خطا در کپی:", err));
             }
 
@@ -272,7 +323,7 @@
                     const price = priceEl?.innerText.trim() || 'در حال بررسی';
 
                     if (code) {
-                        lines.push(`${code} : ${price}`);
+                        lines.push(`${code} ${price}`);
                     }
                 });
 

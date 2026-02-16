@@ -324,7 +324,7 @@
                     @php $shownBuyerGroups = []; @endphp
                     @foreach($messages as $message)
                         @if(!empty($message->buyer_name) && !in_array($groupId, $shownBuyerGroups))
-                            <span class="dash-buyer-tag float-right m-2">{{ $message->buyer_name }}</span>
+                            <span class="dash-buyer-tag float-right m-2" dir="rtl">{{ $message->buyer_name }}</span>
                             @php $shownBuyerGroups[] = $groupId; @endphp
 
                         @endif
@@ -342,7 +342,7 @@
                             <img src="{{ $message->image_url }}" alt="" class="gallery-img" style="border-radius: 6px;">
                             <p onclick="copyText(this)"
                                class="chat-code chat-group-{{ $groupId }} dash-code-line inline-block">{{ trim($parts[0]) }}</p>
-                            @if(isset($parts[1]) && trim($parts[1]) !== '')
+                            @if(isset($parts[1]) && trim($parts[1]) !== '' && trim($parts[1]) != '-')
                                 : <p onclick="copyText(this)"
                                      class="chat-code  chat-group-{{ $groupId }} dash-code-line inline-block"
                                      style="color: #aaa">

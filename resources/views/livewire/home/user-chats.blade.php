@@ -41,7 +41,7 @@
     @endphp
 
     <div id="chat-container"
-         class="h-[94vh] w-[95%] inline-block overflow-y-auto rounded-2xl bg-white border rounded space-y-4">
+         class="h-[94vh] w-[95%] inline-block overflow-y-auto rounded-2xl bg-white border space-y-4">
         <div class="dash-header sticky top-0 z-10">تکمیل شده</div>
         <div class="p-5">
             @foreach($messagesByDate as $date => $dayMessages)
@@ -64,29 +64,30 @@
 
                     @if($group->count() > 1)
                         {{-- پیام‌های گروهی --}}
-                        <div class="rounded-lg p-2 mb-2 border w-full hidden bg-gray-100 chat-group"
+                        <div class="rounded-lg p-2 mb-2 border w-full hidden bg-gray-100 chat-group relative"
                              data-group-id="{{ $groupId }}">
 
-                            <button onclick="copyChatGroup('{{ $groupId }}', this)"
-                                    class="copy-btn p-1 rounded-full float-right hover:bg-green-500/20 transition mb-5"
-                                    title="کپی پیام‌های این گروه">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000"
-                                     viewBox="0 0 24 24">
-                                    <path
-                                        d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
-                                </svg>
-                            </button>
+                            <div class="absolute right-[20px] top-[10px]">
+                                <button onclick="copyChatGroup('{{ $groupId }}', this)"
+                                        class="copy-btn p-1 rounded-full float-right hover:bg-green-500/20 transition mb-5"
+                                        title="کپی پیام‌های این گروه">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000"
+                                         viewBox="0 0 24 24">
+                                        <path
+                                            d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
+                                    </svg>
+                                </button>
 
-                            <button onclick="copyCodesOnly(this)"
-                                    class="copy-btn p-1 rounded-full float-right hover:bg-green-500/20 transition mb-5"
-                                    title="کپی فقط کد ها">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     viewBox="0 0 24 24">
-                                    <path
-                                        d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
-                                </svg>
-                            </button>
-
+                                <button onclick="copyCodesOnly(this)"
+                                        class="copy-btn p-1 rounded-full float-right hover:bg-green-500/20 transition mb-5"
+                                        title="کپی فقط کد ها">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path
+                                            d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                                    </svg>
+                                </button>
+                            </div>
 
                             @foreach($group as $message)
                                 @if($message->chat_in_progress == "0")
@@ -111,9 +112,13 @@
                                                         {{ $code[0] }}
                                                     </p>
                                                 </div>
-                                                <div class="text-[11px] text-gray-500 inline-block " data-price>
+                                                <div class="text-[11px] price text-gray-500 inline-block " data-price>
                                                     <span class="m-1">:</span>
                                                     {{ $price !== null && $price !== '' ? $price : 'در حال بررسی' }}
+                                                </div>
+                                                <div class="text-[15px] inline-block float-right mr-[70px]">
+                                                    <span
+                                                        class="dash-time">{{ $message->updated_at->format('H:i') }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -140,7 +145,7 @@
                                             $code = explode(':', $message->code);
                                         @endphp
 
-                                        <div class="block">
+                                        <div class="block relative">
                                             <p data-code onclick="copyText(this)" class="cursor-pointer inline-block">
                                                 {{ $code[0] }}
                                             </p>
@@ -148,7 +153,11 @@
                                             <div class="text-[11px] text-gray-500 inline-block" data-price>
                                                 {{ $price !== null && $price !== '' ? $price : 'در حال بررسی' }}
                                             </div>
-
+                                            <div class="text-[15px] inline-block float-right mr-[80px]">
+                                                    <span
+                                                        class="dash-time">{{ $message->updated_at->format('H:i') }}</span>
+                                            </div>
+                                            <div class="absolute right-[10px] top-[3px]">
                                             <button onclick="copySingleMessage('{{ $message->id }}', this)"
                                                     class="copy-btn p-1 rounded-full hover:bg-green-500/20 transition ml-2 float-right"
                                                     title="کپی این پیام">
@@ -168,6 +177,7 @@
                                                         d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
                                                 </svg>
                                             </button>
+                                                </div>
 
 
                                             <img src="{{$message->image_url}}" class="gallery-img"
@@ -317,7 +327,7 @@
 
                 document.querySelectorAll(`.chat-group[data-group-id="${groupId}"] .message-item`).forEach(el => {
                     const codeEl = el.querySelector('.text-sm > div:first-child');
-                    const priceEl = el.querySelector('.text-sm > div:last-child');
+                    const priceEl = el.querySelector('.text-sm > .price');
 
                     const code = codeEl?.innerText.trim();
                     const price = priceEl?.innerText.trim() || 'در حال بررسی';

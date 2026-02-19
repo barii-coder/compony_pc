@@ -13,7 +13,7 @@
     .dash-box-chats .dash-header {
         background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
         color: #fff;
-        padding: 0.75rem 1rem;
+        padding: 0.5rem 1rem;
         font-weight: 700;
         text-align: center;
         font-size: 0.95rem;
@@ -164,7 +164,7 @@
         align-items: center;
     }
 
-    .dash-box-chats .dash-btn-code {
+    .dash-btn-code {
         padding: 3px 0 !important;
         border-radius: 0.5rem;
         font-size: 11px;
@@ -174,17 +174,17 @@
         text-align: center;
     }
 
-    .dash-box-chats .dash-btn-code {
+    .dash-btn-code {
         background: #e0e7ff;
         color: #3730a3;
     }
 
-    .dash-box-chats .dash-btn-code:hover {
+    .dash-btn-code:hover {
         background: #c7d2fe;
         transform: translateY(-1px);
     }
 
-    .dash-box-chats .dash-btn-code.selected {
+    .dash-btn-code.selected {
         background: linear-gradient(135deg, #059669, #047857);
         color: #fff;
     }
@@ -287,8 +287,11 @@
         margin-right: 0;
     }
 </style>
-
-<div class="dash-box-chats float-left m-2 w-[28%] max-h overflow-auto here-column-1">
+@php
+    use Illuminate\Support\Facades\Auth;
+     $user = Auth::user()
+@endphp
+<div class="dash-box-chats float-left mt-2 {{$user->role == 'buyer' ? 'w-[34%]' : ' w-[32%]'}} max-h overflow-auto here-column-1">
     <div class="dash-header sticky top-0 z-10">چت‌های در جریان</div>
     <ul class="p-2" style="list-style: none; margin: 0;">
         @foreach($groups as $groupId => $messages)
@@ -299,7 +302,7 @@
                 <div class="dash-card-head">
                     <img src="{{ $firstMessage->user->profile_image_path }}" class="dash-avatar" alt="">
                     <div class="dash-card-actions">
-                        <button wire:click="deleteGroup('{{ $groupId }}')" class="dash-btn-icon" title="حذف گروه">
+                        <button wire:click="deleteGroupOn2('{{ $groupId }}')" class="dash-btn-icon" title="حذف گروه">
                             <span wire:loading.remove wire:target="deleteGroup('{{ $groupId }}')" class="send-arrow">
                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                       fill="none" stroke="currentColor" stroke-width="2"><path
@@ -337,7 +340,7 @@
                             $mainCode = trim($parts[0]);
                                 $count = $messageCounts[$mainCode] ?? 0;
                              $times = $messageTimesByCode[$mainCode] ?? [];
-                            @endphp
+                        @endphp
                         <li id="message-{{ $message->id }}" class="dash-msg-item" wire:key="message-{{ $message->id }}">
                             <img src="{{ $message->image_url }}" alt="" class="gallery-img" style="border-radius: 6px;">
                             <p onclick="copyText(this)"
@@ -346,7 +349,7 @@
                                 : <p onclick="copyText(this)"
                                      class="chat-code  chat-group-{{ $groupId }} dash-code-line inline-block"
                                      style="color: #aaa">
-                                    {{ trim($parts[1]) }}
+                                    {{ $setedValue =  trim($parts[1]) }}
                                 </p>
                             @endif
                             @if($hasPrice)
@@ -361,11 +364,11 @@
                             <div id="edit-box-{{ $message->id }}" class="edit-price-box" style="display:none;"
                                  wire:ignore>
                                 <div class="dash-code-btns">
-                                    @foreach(['a','k','h','g','x','L', $message->question == '1' ? '👍' : null, $message->question == '1' ? '👎' : null] as $c)
+                                    @foreach(['A','K','H','C','G','X','L', $message->question == '1' ? '👍' : null, $message->question == '1' ? '👎' : null] as $c)
                                         @if($c)
                                             @php $key = $message->id . ':' . $c; @endphp
                                             <button onclick="handleCodeClick(event,'{{ $c }}',{{ $message->id }})"
-                                                    style="{{$c=='x'? 'margin-left: 10px' : ''}}"
+                                                    style="{{$c=='X'? 'margin-left: 10px' : ''}}"
                                                     class="dash-btn-code {{ in_array($key, $selectedCodes) ? 'selected' : '' }}">{{ $c }}</button>
                                         @endif
                                     @endforeach
@@ -375,14 +378,19 @@
                                            wire:keydown.enter="submit_comment({{ $message->id }})"
                                            placeholder="کامنت" class="dash-comment-input">
                                     <div class="dash-input-wrap">
-{{--                                        @if(isset($parts[1]) && trim($parts[1]) !== '')--}}
-{{--                                            @php--}}
-{{--                                            $inputPricevalue = trim($parts[1]);--}}
-{{--                                            @endphp--}}
-{{--                                        @endif--}}
-                                        <input type="text" wire:model.debounce.500ms="prices.{{ $message->id }}"
-                                               wire:keydown.enter="submit_answer({{ $message->id }})">
-                                        <button type="button" wire:click="submit_answer({{ $message->id }})"
+                                        {{--                                        @if(isset($parts[1]) && trim($parts[1]) !== '')--}}
+                                        {{--                                            @php--}}
+                                        {{--                                            $inputPricevalue = trim($parts[1]);--}}
+                                        {{--                                            @endphp--}}
+                                        {{--                                        @endif--}}
+                                        <input
+                                            type="text"
+                                            value="{{ isset($setedValue) ? $setedValue : '' }}"
+                                            id="price-input-{{ $message->id }}"
+                                            onkeydown="handleFirstInputEnter(event, {{ $message->id }})"
+                                            placeholder="قیمت">
+                                        <button type="button"
+                                                onclick="handleFirstInputEnter(null, {{ $message->id }})"
                                                 class="dash-btn-submit"><span class="dash-submit-arrow">
                                                             <span wire:loading.remove
                                                                   wire:target="submit_answer({{ $message->id }})"
@@ -391,6 +399,7 @@
                                                 <span wire:loading wire:target="submit_answer({{ $message->id }})"
                                                       style="font-size:12px;">...</span>
                                                 </span></button>
+
                                     </div>
                                 </div>
                                 @if(collect($selectedCodes)->contains(fn($v) => str_starts_with($v, $message->id . ':')))
@@ -405,13 +414,13 @@
                                 <span class="dash-time-badge">( {{ implode(' ، ', $times) }} )</span>
                             @endif
 
-                        @if($isEmpty == 1 || $hasNoColon == true)
+                            @if($isEmpty == 1 || $hasNoColon == true)
                                 <div class="dash-code-btns">
-                                    @foreach(['a','k','h','g','x','L', $message->question == '1' ? '👍' : null, $message->question == '1' ? '👎' : null] as $c)
+                                    @foreach(['A','K','H','C','G','X','L', $message->question == '1' ? '👍' : null, $message->question == '1' ? '👎' : null] as $c)
                                         @if($c)
                                             @php $key = $message->id . ':' . $c; @endphp
                                             <button onclick="handleCodeClick(event,'{{ $c }}',{{ $message->id }})"
-                                                    style="{{$c=='x'? 'margin-left: 10px' : ''}}"
+                                                    style="{{$c=='X'? 'margin-left: 10px' : ''}}"
                                                     class="dash-btn-code {{ in_array($key, $selectedCodes) ? 'selected' : '' }}">{{ $c }}</button>
                                         @endif
                                     @endforeach
@@ -421,10 +430,13 @@
                                            wire:keydown.enter="submit_comment({{ $message->id }})"
                                            placeholder="کامنت" class="dash-comment-input">
                                     <div class="dash-input-wrap">
-                                        <input type="text" wire:model.debounce.500ms="prices.{{ $message->id }}"
-                                               placeholder="قیمت"
-                                               wire:keydown.enter="submit_answer({{ $message->id }})">
-                                        <button type="button" wire:click="submit_answer({{ $message->id }})"
+                                        <input
+                                            type="text"
+                                            id="price-input-{{ $message->id }}"
+                                            onkeydown="handlePriceEnter(event, this, {{ $message->id }})"
+                                            placeholder="قیمت">
+                                        <button type="button"
+                                                onclick="submitPriceButton(this.previousElementSibling, {{ $message->id }})"
                                                 class="dash-btn-submit"><span class="dash-submit-arrow">
                                                             <span wire:loading.remove
                                                                   wire:target="submit_answer({{ $message->id }})"
@@ -449,11 +461,90 @@
     </ul>
 
     <script>
-        function toggleEditBox(id){
-            let box = document.getElementById('edit-box-' + id);
-            if(!box) return;
 
-            if(box.style.display === 'none' || box.style.display === ''){
+        function handleFirstInputEnter(event, messageId) {
+            if (event && event.key && event.key !== 'Enter') return;
+
+            if (event) event.preventDefault();
+
+            const input = document.getElementById('price-input-' + messageId);
+            if (!input) return;
+
+            const value = input.value.trim();
+            if (!value) return;
+
+            Livewire.dispatch('submitPriceDirect', {
+                id: messageId,
+                price: value
+            });
+
+            input.value = '';
+            input.blur();
+        }
+
+
+
+        function submitPrice(messageId) {
+            let input =
+                document.getElementById('price-input-' + messageId) ||
+                document.getElementById('price-input-empty-' + messageId);
+
+            if (!input) return;
+
+            const value = input.value.trim();
+            if (!value) return;
+
+            Livewire.dispatch('submitPriceDirect', {
+                id: messageId,
+                price: value
+            });
+
+            input.value = '';
+            input.blur(); //
+        }
+
+        function handlePriceEnter(event, input, messageId) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+
+                const value = input.value.trim();
+                if (!value) return;
+
+                // ارسال به Livewire
+                Livewire.dispatch('submitPriceDirect', {
+                    id: messageId,
+                    price: value
+                });
+
+                // پاک کردن input بعد از ارسال
+                input.value = '';
+                input.blur();
+            }
+        }
+
+
+
+        function submitPriceButton(input, messageId) {
+            const value = input.value.trim();
+            if (!value) return;
+
+            Livewire.dispatch('submitPriceDirect', {
+                id: messageId,
+                price: value
+            });
+
+            input.value = '';
+            input.blur();
+        }
+
+
+
+
+        function toggleEditBox(id) {
+            let box = document.getElementById('edit-box-' + id);
+            if (!box) return;
+
+            if (box.style.display === 'none' || box.style.display === '') {
                 box.style.display = 'block';
             } else {
                 box.style.display = 'none';

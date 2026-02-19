@@ -2,7 +2,7 @@
 
 <style>
     .dash-box-wait { background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04); overflow: auto; }
-    .dash-box-wait .dash-header { background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%); color: #fff; padding: 5px 0.75rem; font-weight: 700; text-align: center; font-size: 0.9rem; border-radius: 1rem 1rem 0 0; }
+    .dash-box-wait .dash-header { background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%); color: #fff; padding: .5rem 0.75rem; font-weight: 700; text-align: center; font-size: 0.9rem; border-radius: 1rem 1rem 0 0; }
     .dash-box-wait .dash-group-card { background: #fff; border-radius: 1rem; padding: 5px; margin-bottom: 0.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; display: block}
     .dash-box-wait .dash-item { margin-top: 0.2rem; padding: 5px; border-radius: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; }
     .dash-box-wait .dash-item:hover { background: #f1f5f9; }
@@ -17,8 +17,11 @@
     .dash-box-wait .dash-btn-sm:hover { transform: translateY(-1px); }
     .dash-box-wait .dash-avatar { width: 30px; height: 30px; border-radius: 0.75rem; object-fit: cover; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 </style>
-
-<div class="dash-box-wait float-left m-2 w-[26%] max-h overflow-auto">
+@php
+     use Illuminate\Support\Facades\Auth;
+     $user = Auth::user()
+@endphp
+<div class="dash-box-wait float-left ml-1 mt-2 {{$user->role == 'buyer' ? 'w-[30%]' : ' w-[22%]'}} max-h overflow-auto">
     <div class="dash-header sticky top-0 z-10">منتظر قیمت</div>
     <ul class="space-y-2 text-sm p-2" style="list-style: none;">
         @foreach($wait_for_price->groupBy('group_id') as $groupId => $groupMessages)
@@ -68,22 +71,56 @@
                                     <span wire:loading wire:target="code_answer_update('n', {{ $message->id }})" style="font-size:12px;">...</span>
                                 </button>
                             </div>
-                            <span class="text-red-600 cursor-pointer text-xs">{{ $message->text }}</span>
+                            <span class="text-red-600 cursor-pointer text-s">{{ $message->text }}</span>
                         </div>
                         <div class="dash-price-wrap">
-                            <input type="text" placeholder="قیمت" wire:model.debounce.500ms="prices.{{ $message->id }}" wire:keydown.enter="submit_answer_on3({{ $message->id }})">
-                            <button type="button" wire:click="submit_answer_on3({{ $message->id }})" class="dash-price-btn">
-
-                                <span wire:loading.remove wire:target="submit_answer_on3({{ $message->id }})" class="send-arrow">➤</span>
-
-                                <span wire:loading wire:target="submit_answer_on3({{ $message->id }})"
-                                      style="font-size:12px;">...</span>
-
+                            <input type="text"
+                                   id="wait-price-{{ $message->id }}"
+                                   placeholder="قیمت"
+                                   class="wait-price-input">
+                            <button type="button"
+                                    onclick="sendWaitPrice({{ $message->id }})"
+                                    class="dash-price-btn">
+                                ➤
                             </button>
+
                         </div>
                     </div>
                 @endforeach
             </li>
         @endforeach
     </ul>
+    <script>
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && e.target.classList.contains('wait-price-input')) {
+                e.preventDefault();
+
+                const input = e.target;
+                const messageId = input.id.replace('wait-price-', '');
+
+                sendWaitPrice(messageId);
+            }
+        });
+        function sendWaitPrice(messageId) {
+            const input = document.getElementById('wait-price-' + messageId);
+            if (!input) return;
+
+            const price = input.value.trim();
+            if (!price) return;
+
+            // ارسال به Livewire
+            Livewire.dispatch('submitAnswerOn3Direct', {
+                id: messageId,
+                price: price
+            });
+
+            // پاک کردن مقدار
+            input.value = '';
+
+            // برداشتن فوکوس تا Enter بعدی trigger نشه
+            input.blur();
+        }
+
+
+    </script>
 </div>

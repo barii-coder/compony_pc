@@ -12,6 +12,7 @@ Route::get('/test-admin-broadcast', function () {
     return 'sent';
 });
 
+Route::get('/circles', \App\Livewire\Home\CirclePage::class)->name('circles');
 
 Route::get('/submit', \App\Livewire\Admin\Support\Index::class);
 // Login

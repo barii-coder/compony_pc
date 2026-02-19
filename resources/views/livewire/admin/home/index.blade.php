@@ -1,4 +1,4 @@
-<div class="w-full" style="margin: 0 10px" wire:poll.1100ms>
+<div class="w-full" style="margin: 0 10px" wire:poll.2000ms>
     <div style="width: 1px;height: 1px;background: #f00"></div>
 
     <div class="lightbox" wire:ignore>
@@ -25,7 +25,6 @@
 
     {{-- باکس چت‌های در جریان --}}
     <x-admin.dashboard.chats-in-progress-box
-        wire:ignore
         :groups="$groups"
         :messageCounts="$messageCounts"
         :messageTimesByCode="$messageTimesByCode"
@@ -47,10 +46,11 @@
     />
 
     {{-- باکس تکمیل شده --}}
-    <x-admin.dashboard.completed-chats-box :ended_chats="$ended_chats"/>
-
+    @if($user->role != 'buyer')
+        <x-admin.dashboard.completed-chats-box :ended_chats="$ended_chats"  :selectedEndedUser="$selectedEndedUser"/>
+    @endif
     {{-- صورت ها --}}
-    @if($user->id == 5 or $user->id == 1)
+    @if($user->role == 'admin')
         <x-admin.dashboard.soraat-forms-box :productsGrouped="$productsGrouped"/>
     @endif
 

@@ -100,6 +100,9 @@
     </head>
     <body>
     <div id="miniUploader">
+        <div id="miniHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <button type="button" class="p-1" id="miniToggle" style="font-size:11px;">−</button>
+        </div>
         <form id="testForm">
             <div class="form-group" style="display:none">
                 <label for="name">نام</label>
@@ -124,6 +127,35 @@
     <div id="resultBox" class="result-box" style="display: none;" aria-live="polite"></div>
 
     <script>
+
+        const miniUploader = document.getElementById('miniUploader');
+        const miniToggle = document.getElementById('miniToggle');
+        const formElement = document.getElementById('testForm');
+
+        let minimized = localStorage.getItem('miniUploader_minimized') === 'true';
+
+        function applyState() {
+            if (minimized) {
+                formElement.style.display = 'none';
+                miniUploader.style.height = '30px';
+                miniUploader.style.width = '30px';
+                miniToggle.textContent = '+';
+            } else {
+                formElement.style.display = 'block';
+                miniUploader.style.height = '290px';
+                miniUploader.style.width = '300px';
+                miniToggle.textContent = '−';
+            }
+        }
+
+        miniToggle.addEventListener('click', function () {
+            minimized = !minimized;
+            localStorage.setItem('miniUploader_minimized', minimized);
+            applyState();
+        });
+
+        applyState();
+
         (function () {
             const form = document.getElementById('testForm');
             const previewZone = document.getElementById('previewZone');

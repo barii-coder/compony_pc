@@ -12,6 +12,7 @@ use function PHPUnit\Framework\isArray;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 
 use Livewire\WithFileUploads;
 
@@ -40,6 +41,8 @@ class Index extends Component
     public $aa;
     public $prices = [];
     public array $selectedCodes = [];
+
+    public $c_s_minimized = false;
 
     // 🔹 آرایه جدید برای کامنت‌ها
     public array $comments = [];
@@ -70,6 +73,17 @@ class Index extends Component
         'codeAnswerWithComment' => 'codeAnswerWithComment',
         'pasteWithText' => 'handlePasteWithText'
     ];
+
+    public $selectedEndedUser = null;
+
+    public function selectEndedUser($userId)
+    {
+        if ($this->selectedEndedUser == $userId) {
+            $this->selectedEndedUser = null;
+        } else {
+            $this->selectedEndedUser = $userId;
+        }
+    }
 
     public function handlePasteWithText($data)
     {
@@ -121,10 +135,10 @@ class Index extends Component
 
     public function checkAccess($userId)
     {
-        $allowedUsers = [5, 1]; // فقط این یوزرها اجازه دارند
+        $user = User::find($userId);
 
-        if (!in_array($userId, $allowedUsers)) {
-            throw \Illuminate\Validation\ValidationException::withMessages([
+        if (!$user || $user->role !== 'admin') {
+            throw ValidationException::withMessages([
                 'access' => 'شما دسترسی لازم برای مشاهده این بخش را ندارید.'
             ]);
         }
@@ -278,92 +292,149 @@ class Index extends Component
 
     }
 
-    public
-    function submit_answer($id)
+//    public
+//    function submit_answer($id)
+//    {
+//        $user = Auth::user();
+//        $this->checkAccess($user->id);
+//        $this->validate();
+//
+//        $a = Answer::query()->where('message_id', $id)->get();
+//
+//        $b = Message::query()->where('id', $id)->get();
+//        foreach ($b as $c) {
+//            $name = User::query()->where('id', $c->user_id)->first();
+//        }
+//
+//        if ($a->isEmpty()) {
+//            Answer::query()->create([
+//                'user_id' => $user->id,
+//                'message_id' => $id,
+//                'price' => $this->prices[$id] ?? null,
+//                'respondent_by_code' => '',
+//            ]);
+//
+//            Message::query()->where('id', $id)
+//                ->update([
+//                    'chat_in_progress' => '1',
+//                    'active_group' => '0',
+//                    'past_chat_progress' => '2',
+//                ]);
+//
+//            $this->prices = [];
+//        } else {
+//
+//            Answer::query()->where('message_id', $id)->update([
+//                'price' => $this->prices[$id] ?? null,
+//                'respondent_by_code' => '0',
+//            ]);
+//
+//            Message::query()->where('id', $id)
+//                ->update([
+//                    'chat_in_progress' => '1',
+//                    'past_chat_progress' => '2',
+//                    'active_group' => '0']);
+//
+//            $this->prices = [];
+//        }
+//        $this->dispatch('answer-submitted', message: " پاسخ کاربر $name->name ثبت شد! ");
+//    }
+
+    #[On('submitPriceDirect')]
+    public function submitPriceDirect($id, $price)
     {
         $user = Auth::user();
         $this->checkAccess($user->id);
-        $this->validate();
 
-        $a = Answer::query()->where('message_id', $id)->get();
+        $answer = Answer::where('message_id', $id)->first();
+        $message = Message::find($id);
+        $name = User::find($message->user_id);
 
-        $b = Message::query()->where('id', $id)->get();
-        foreach ($b as $c) {
-            $name = User::query()->where('id', $c->user_id)->first();
-        }
-
-        if ($a->isEmpty()) {
-            Answer::query()->create([
+        if (!$answer) {
+            Answer::create([
                 'user_id' => $user->id,
                 'message_id' => $id,
-                'price' => $this->prices[$id] ?? null,
+                'price' => $price,
                 'respondent_by_code' => '',
             ]);
-
-            Message::query()->where('id', $id)
-                ->update([
-                    'chat_in_progress' => '1',
-                    'active_group' => '0',
-                    'past_chat_progress' => '2',
-                ]);
-
-            $this->prices = [];
         } else {
-
-            Answer::query()->where('message_id', $id)->update([
-                'price' => $this->prices[$id] ?? null,
+            $answer->update([
+                'price' => $price,
                 'respondent_by_code' => '0',
             ]);
-
-            Message::query()->where('id', $id)
-                ->update([
-                    'chat_in_progress' => '1',
-                    'past_chat_progress' => '2',
-                    'active_group' => '0']);
-
-            $this->prices = [];
         }
-        $this->dispatch('answer-submitted', message: " پاسخ کاربر $name->name ثبت شد! ");
+
+        $message->update([
+            'chat_in_progress' => '1',
+            'active_group' => '0',
+            'past_chat_progress' => '2',
+        ]);
+
     }
 
-    public
-    function submit_answer_on3($id)
+
+//    public
+//    function submit_answer_on3($id)
+//    {
+//        $user = Auth::user();
+//        $this->validate();
+//        $this->checkAccess($user->id);
+//
+//        $a = Answer::query()->where('message_id', $id)->get();
+//
+//        if ($a->isEmpty()) {
+//            Answer::query()->create([
+//                'user_id' => $user->id,
+//                'message_id' => $id,
+//                'price' => $this->prices[$id] ?? null,
+//                'respondent_by_code' => '0',
+//            ]);
+//
+//            Message::query()->where('id', $id)
+//                ->update([
+//                    'chat_in_progress' => '1',
+//                    'past_chat_progress' => '3',
+//                    'active_group' => '0']);
+//
+//            $this->prices = [];
+//        } else {
+//            Answer::query()->where('message_id', $id)->update([
+//                'price' => $this->prices[$id] ?? null,
+//                'respondent_by_code' => '0',
+//            ]);
+//
+//            Message::query()->where('id', $id)
+//                ->update([
+//                    'chat_in_progress' => '1',
+//                    'past_chat_progress' => '3',
+//                    'active_group' => '0']);
+//
+//            $this->prices = [];
+//        }
+//    }
+
+    #[On('submitAnswerOn3Direct')]
+    public function submitAnswerOn3Direct($id, $price)
     {
         $user = Auth::user();
-        $this->validate();
+        $this->checkAccess($user->id);
 
-        $a = Answer::query()->where('message_id', $id)->get();
-
-        if ($a->isEmpty()) {
-            Answer::query()->create([
+        Answer::updateOrCreate(
+            ['message_id' => $id],
+            [
                 'user_id' => $user->id,
-                'message_id' => $id,
-                'price' => $this->prices[$id] ?? null,
+                'price' => $price,
                 'respondent_by_code' => '0',
-            ]);
+            ]
+        );
 
-            Message::query()->where('id', $id)
-                ->update([
-                    'chat_in_progress' => '1',
-                    'past_chat_progress' => '3',
-                    'active_group' => '0']);
-
-            $this->prices = [];
-        } else {
-            Answer::query()->where('message_id', $id)->update([
-                'price' => $this->prices[$id] ?? null,
-                'respondent_by_code' => '0',
-            ]);
-
-            Message::query()->where('id', $id)
-                ->update([
-                    'chat_in_progress' => '1',
-                    'past_chat_progress' => '3',
-                    'active_group' => '0']);
-
-            $this->prices = [];
-        }
+        Message::where('id', $id)->update([
+            'chat_in_progress' => '1',
+            'past_chat_progress' => '3',
+            'active_group' => '0'
+        ]);
     }
+
 
     public
     function toggleCode($code, $messageId)
@@ -429,6 +500,14 @@ class Index extends Component
     function deleteGroup($group_id)
     {
         Message::query()->where('group_id', $group_id)->delete();
+    }
+
+    public
+    function deleteGroupOn2($group_id)
+    {
+        Message::query()->where('group_id', $group_id)
+            ->where('chat_in_progress', '2')
+            ->delete();
     }
 
 
@@ -767,6 +846,16 @@ class Index extends Component
         }
     }
 
+    public function dbtn($message_id)
+    {
+        $message = Message::find($message_id);
+
+        $message->timestamps = false; // غیرفعال کردن موقت timestamps
+
+        $message->update([
+            'is_circle' => !$message->is_circle,
+        ]);
+    }
 
     public function render()
     {
@@ -842,6 +931,7 @@ class Index extends Component
                 ];
             })
             ->toArray();
+
 
 
         return view('livewire.admin.home.index', compact(

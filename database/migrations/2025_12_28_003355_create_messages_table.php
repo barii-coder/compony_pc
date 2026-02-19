@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('question');
             $table->string('group_id');
             $table->string('active_group');
+            $table->string('is_circle');
             $table->string('chat_in_progress');
             $table->string('past_chat_progress')->nullable();
             $table->timestamp('previous_updated_at')->nullable();

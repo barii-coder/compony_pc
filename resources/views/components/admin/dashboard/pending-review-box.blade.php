@@ -250,7 +250,12 @@
 
 </style>
 
-<div class="dash-box-pending float-left m-2 w-[28%] max-h overflow-auto">
+@php
+    use Illuminate\Support\Facades\Auth;
+     $user = Auth::user()
+@endphp
+
+<div class="dash-box-pending float-left ml-1 mt-2 {{$user->role == 'buyer' ? 'w-[35%]' : ' w-[30%]'}} max-h overflow-auto">
     <div class="dash-header sticky top-0 z-10">منتظر بررسی</div>
     <ul class="p-2" style="list-style: none; margin: 0;">
         @foreach($answersGrouped as $groupId => $groupAnswers)

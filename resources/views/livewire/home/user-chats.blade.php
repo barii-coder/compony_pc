@@ -1,4 +1,8 @@
 <div class="w-full p-1 mb-4">
+    <div class=" w-[80%] bg-gray-200 border rounded-l" style="margin: 3px auto; box-shadow: 1px 1px 4px #aaa">
+        <input type="text" id="code-search" placeholder="جستجوی کد..."
+               class="w-full p-2 border rounded-lg" onkeyup="searchByCode()" />
+    </div>
     <div class="lightbox" wire:ignore>
         <span class="close">&times;</span>
         <img class="lightbox-content" id="lightbox-img"/>
@@ -158,26 +162,26 @@
                                                         class="dash-time">{{ $message->updated_at->format('H:i') }}</span>
                                             </div>
                                             <div class="absolute right-[10px] top-[3px]">
-                                            <button onclick="copySingleMessage('{{ $message->id }}', this)"
-                                                    class="copy-btn p-1 rounded-full hover:bg-green-500/20 transition ml-2 float-right"
-                                                    title="کپی این پیام">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                                     fill="#000" viewBox="0 0 24 24">
-                                                    <path
-                                                        d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
-                                                </svg>
-                                            </button>
-                                            <button onclick="copyCodesOnly(this)"
-                                                    class="copy-btn p-1 rounded-full hover:bg-green-500/20 transition ml-2 float-right"
-                                                    title="کپی فقط کد ها">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                     fill="currentColor"
-                                                     viewBox="0 0 24 24">
-                                                    <path
-                                                        d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
-                                                </svg>
-                                            </button>
-                                                </div>
+                                                <button onclick="copySingleMessage('{{ $message->id }}', this)"
+                                                        class="copy-btn p-1 rounded-full hover:bg-green-500/20 transition ml-2 float-right"
+                                                        title="کپی این پیام">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                         fill="#000" viewBox="0 0 24 24">
+                                                        <path
+                                                            d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
+                                                    </svg>
+                                                </button>
+                                                <button onclick="copyCodesOnly(this)"
+                                                        class="copy-btn p-1 rounded-full hover:bg-green-500/20 transition ml-2 float-right"
+                                                        title="کپی فقط کد ها">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                         fill="currentColor"
+                                                         viewBox="0 0 24 24">
+                                                        <path
+                                                            d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
 
 
                                             <img src="{{$message->image_url}}" class="gallery-img"
@@ -360,7 +364,53 @@
                 }, 2000);
             }
 
+            function searchByCode() {
+                const query = document.getElementById('code-search').value.trim().toLowerCase();
+                const messages = document.querySelectorAll('.message-item');
+                const groups = document.querySelectorAll('.chat-group');
+                const dateSeparators = document.querySelectorAll('.date-separator');
 
+                // اگر سرچ خالی بود → برگرد به حالت پیش‌فرض (همه مخفی بمانند تا یوزر انتخاب شود)
+                if (!query) {
+                    messages.forEach(m => m.classList.add('hidden'));
+                    groups.forEach(g => g.classList.add('hidden'));
+                    dateSeparators.forEach(d => d.classList.add('hidden'));
+                    return;
+                }
+
+                // اول همه چیز رو مخفی کن
+                messages.forEach(m => m.classList.add('hidden'));
+                groups.forEach(g => g.classList.add('hidden'));
+                dateSeparators.forEach(d => d.classList.add('hidden'));
+
+                // بررسی پیام‌ها
+                messages.forEach(m => {
+                    const codeEl = m.querySelector('[data-code]');
+                    if (codeEl && codeEl.innerText.toLowerCase().includes(query)) {
+
+                        const parentGroup = m.closest('.chat-group');
+
+                        if (parentGroup) {
+                            // اگر داخل گروه بود → کل گروه نمایش داده شود
+                            parentGroup.classList.remove('hidden');
+
+                            // همه پیام‌های داخل گروه هم visible شوند
+                            parentGroup.querySelectorAll('.message-item').forEach(msg => {
+                                msg.classList.remove('hidden');
+                            });
+
+                        } else {
+                            // اگر پیام تکی بود → خودش نمایش داده شود
+                            m.classList.remove('hidden');
+                        }
+
+                        // نمایش separator مربوط به تاریخ
+                        const date = m.dataset.date;
+                        const separator = document.querySelector(`.date-separator[data-date="${date}"]`);
+                        if (separator) separator.classList.remove('hidden');
+                    }
+                });
+            }
         </script>
     </div>
 </div>

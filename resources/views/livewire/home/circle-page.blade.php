@@ -1,4 +1,4 @@
-<div>
+<div wire:poll.3s>
     <style>
         .dash-header {
             background: linear-gradient(135deg, #00f 0%, #000 100%);

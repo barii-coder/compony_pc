@@ -854,6 +854,7 @@ class Index extends Component
 
         $message->update([
             'is_circle' => !$message->is_circle,
+            'update_time' => Carbon::now()->format('Y/m/d H:i:s'),
         ]);
     }
 

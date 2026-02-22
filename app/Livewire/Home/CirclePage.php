@@ -9,7 +9,7 @@ class CirclePage extends Component
 {
     public function render()
     {
-        $circleMesages = Message::query()->where('is_circle', 1)->orderBy('updated_at','desc')->get();
+        $circleMesages = Message::query()->where('is_circle', 1)->orderBy('update_time','desc')->get();
         return view('livewire.home.circle-page',compact('circleMesages'));
     }
 }

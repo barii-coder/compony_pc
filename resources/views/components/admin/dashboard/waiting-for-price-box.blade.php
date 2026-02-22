@@ -21,7 +21,7 @@
      use Illuminate\Support\Facades\Auth;
      $user = Auth::user()
 @endphp
-<div class="dash-box-wait float-left ml-1 mt-2 {{$user->role == 'buyer' ? 'w-[30%]' : ' w-[22%]'}} max-h overflow-auto">
+<div class="dash-box-wait float-left ml-1 mt-2 {{$user->role == 'buyer' ? 'w-[21%]' : ' w-[22%]'}} max-h overflow-auto">
     <div class="dash-header sticky top-0 z-10">منتظر قیمت</div>
     <ul class="space-y-2 text-sm p-2" style="list-style: none;">
         @foreach($wait_for_price->groupBy('group_id') as $groupId => $groupMessages)

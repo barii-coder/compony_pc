@@ -69,7 +69,7 @@
     .dash-box-done .dash-btn-follow {
         padding: 0.2rem .8rem;
         border-radius: 0.5rem;
-        font-size: 12px;
+        font-size: 10px;
         font-weight: 600;
         background: linear-gradient(180deg, #3b82f6, #2563eb);
         color: #fff;
@@ -130,7 +130,7 @@
 </style>
 @php
     use Illuminate\Support\Facades\Auth;
-     $user = Auth::user()
+     $user = Auth::user();
 @endphp
 <div class="dash-box-done float-left ml-1 mt-2 w-[15%] max-h overflow-auto">
     <div class="dash-header sticky top-0 z-10">تکمیل شده</div>
@@ -145,21 +145,38 @@
                 <span wire:loading wire:target="selectEndedUser({{ $userId }})">...</span>
             </button>
         @endforeach
-
+        <button wire:click="selectEndedUser(0)" class="focus:outline-none inline-block">
+            <img
+                class="m-1 border dash-avatar
+    {{ $selectedEndedUser == 0 ? 'selected' : '' }}"
+                src="/IMG/all.png"
+            >
+            <span wire:loading wire:target="selectEndedUser(0)">...</span>
+        </button>
         @foreach($ended_chats->groupBy('group_id') as $groupId => $groupChats)
-            @php $firstChat = $groupChats->first();$message_user_id = $firstChat->user_id; $isFollowUp = $groupChats->first()->needs_follow_up ?? false; @endphp
+            @php
+                $firstChat = $groupChats->first();$message_user_id = $firstChat->user_id; $isFollowUp = $groupChats->first()->needs_follow_up ?? false;
+    $shouldHide = false;
+
+    if ($selectedEndedUser === 0) {
+        $shouldHide = false;
+    }
+    elseif ($selectedEndedUser !== null) {
+        $shouldHide = $message_user_id != $selectedEndedUser;
+    }
+    else {
+        if ($user->role == 'seler') {
+            $shouldHide = $message_user_id != $user->id;
+        }
+        else {
+            $shouldHide = false;
+        }
+    }
+            @endphp
+
             <li class="dash-card
-             {{ $isFollowUp ? 'follow' : 'normal' }}
-              {{ $user->role == 'seler'
-                 ? (
-                     $selectedEndedUser == null ?(
-                     $message_user_id != $user->id ? 'hidden' : '')
-                      :''
-                     )
-                 : ''
-              }}
-        {{ $selectedEndedUser != null ?( $message_user_id == $selectedEndedUser ? '' : 'hidden') :'' }}
-              ">
+    {{ $isFollowUp ? 'follow' : 'normal' }}
+    {{ $shouldHide ? 'hidden' : '' }}">
                 <div class="flex items-center justify-between mb-1 ">
                     <div class="flex items-center gap-2">
                         <img src="{{ $firstChat->user->profile_image_path }}" class="dash-avatar scale-90" alt="">

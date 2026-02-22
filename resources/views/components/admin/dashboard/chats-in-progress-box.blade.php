@@ -291,7 +291,8 @@
     use Illuminate\Support\Facades\Auth;
      $user = Auth::user()
 @endphp
-<div class="dash-box-chats float-left mt-2 {{$user->role == 'buyer' ? 'w-[34%]' : ' w-[32%]'}} max-h overflow-auto here-column-1">
+<div
+    class="dash-box-chats float-left mt-2 {{$user->role == 'buyer' ? 'w-[40%]' : ' w-[32%]'}} max-h overflow-auto here-column-1">
     <div class="dash-header sticky top-0 z-10">چت‌های در جریان</div>
     <ul class="p-2" style="list-style: none; margin: 0;">
         @foreach($groups as $groupId => $messages)
@@ -303,12 +304,14 @@
                     <img src="{{ $firstMessage->user->profile_image_path }}" class="dash-avatar" alt="">
                     <div class="dash-card-actions">
                         <button wire:click="deleteGroupOn2('{{ $groupId }}')" class="dash-btn-icon" title="حذف گروه">
-                            <span wire:loading.remove wire:target="deleteGroup('{{ $groupId }}')" class="send-arrow">
-                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                      fill="none" stroke="currentColor" stroke-width="2"><path
-                                         d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line
-                                         x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                            </span>
+                                <span wire:loading.remove wire:target="deleteGroup('{{ $groupId }}')"
+                                      class="send-arrow">
+                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                          fill="none" stroke="currentColor" stroke-width="2"><path
+                                             d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line
+                                             x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14"
+                                                                                    y2="17"/></svg>
+                                </span>
 
                             <span wire:loading wire:target="deleteGroup('{{ $groupId }}')"
                                   style="font-size:12px;">...</span>
@@ -319,6 +322,14 @@
                                  viewBox="0 0 24 24">
                                 <path
                                     d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                            </svg>
+                        </button>
+                        <button onclick="copyFullGroup('{{ $groupId }}', this)"
+                                class="dash-btn-icon green copy-btn" title="کپی کلی">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path
+                                    d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
                             </svg>
                         </button>
                     </div>
@@ -338,8 +349,8 @@
                             $hasPrice = !$hasNoColon && !$isEmpty;
                             $parts = explode(':', $message->code);
                             $mainCode = trim($parts[0]);
-                                $count = $messageCounts[$mainCode] ?? 0;
-                             $times = $messageTimesByCode[$mainCode] ?? [];
+                            $count = $messageCounts[$mainCode] ?? 0;
+                            $times = $messageTimesByCode[$mainCode] ?? [];
                         @endphp
                         <li id="message-{{ $message->id }}" class="dash-msg-item" wire:key="message-{{ $message->id }}">
                             <img src="{{ $message->image_url }}" alt="" class="gallery-img" style="border-radius: 6px;">
@@ -392,13 +403,13 @@
                                         <button type="button"
                                                 onclick="handleFirstInputEnter(null, {{ $message->id }})"
                                                 class="dash-btn-submit"><span class="dash-submit-arrow">
-                                                            <span wire:loading.remove
-                                                                  wire:target="submit_answer({{ $message->id }})"
-                                                                  class="send-arrow">➤</span>
+                                                                <span wire:loading.remove
+                                                                      wire:target="submit_answer({{ $message->id }})"
+                                                                      class="send-arrow">➤</span>
 
-                                                <span wire:loading wire:target="submit_answer({{ $message->id }})"
-                                                      style="font-size:12px;">...</span>
-                                                </span></button>
+                                                    <span wire:loading wire:target="submit_answer({{ $message->id }})"
+                                                          style="font-size:12px;">...</span>
+                                                    </span></button>
 
                                     </div>
                                 </div>
@@ -438,13 +449,13 @@
                                         <button type="button"
                                                 onclick="submitPriceButton(this.previousElementSibling, {{ $message->id }})"
                                                 class="dash-btn-submit"><span class="dash-submit-arrow">
-                                                            <span wire:loading.remove
-                                                                  wire:target="submit_answer({{ $message->id }})"
-                                                                  class="send-arrow">➤</span>
+                                                                <span wire:loading.remove
+                                                                      wire:target="submit_answer({{ $message->id }})"
+                                                                      class="send-arrow">➤</span>
 
-                                                <span wire:loading wire:target="submit_answer({{ $message->id }})"
-                                                      style="font-size:12px;">...</span>
-                                                </span></button>
+                                                    <span wire:loading wire:target="submit_answer({{ $message->id }})"
+                                                          style="font-size:12px;">...</span>
+                                                    </span></button>
                                     </div>
                                 </div>
                                 @if(collect($selectedCodes)->contains(fn($v) => str_starts_with($v, $message->id . ':')))
@@ -461,6 +472,40 @@
     </ul>
 
     <script>
+
+
+        function copyFullGroup(groupId, btn) {
+
+            const messageItems = document.querySelectorAll('#message-' + groupId + ' .dash-msg-item, .dash-card .chat-group-' + groupId);
+            const lines = [];
+            const processed = new Set();
+
+            document.querySelectorAll('.chat-group-' + groupId).forEach(el => {
+
+                const li = el.closest('.dash-msg-item');
+                if (!li) return;
+
+                if (processed.has(li)) return;
+                processed.add(li);
+
+                const codeElements = li.querySelectorAll('.chat-group-' + groupId);
+
+                if (codeElements.length === 2) {
+                    const code = codeElements[0].innerText.trim();
+                    const price = codeElements[1].innerText.trim();
+                    lines.push(code + ' : ' + price);
+                } else if (codeElements.length === 1) {
+                    lines.push(codeElements[0].innerText.trim());
+                }
+            });
+
+            const finalText = lines.join('\n');
+
+            navigator.clipboard.writeText(finalText);
+
+            btn.style.transform = "scale(1.1)";
+            setTimeout(() => btn.style.transform = "scale(1)", 150);
+        }
 
         function handleFirstInputEnter(event, messageId) {
             if (event && event.key && event.key !== 'Enter') return;
@@ -481,7 +526,6 @@
             input.value = '';
             input.blur();
         }
-
 
 
         function submitPrice(messageId) {
@@ -523,7 +567,6 @@
         }
 
 
-
         function submitPriceButton(input, messageId) {
             const value = input.value.trim();
             if (!value) return;
@@ -536,8 +579,6 @@
             input.value = '';
             input.blur();
         }
-
-
 
 
         function toggleEditBox(id) {

@@ -6,94 +6,142 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>تست فرم و آپلود چند عکس</title>
         <style>
-            #miniUploader{
-                position:fixed; /* ثابت روی صفحه */
-                bottom:10px; /* فاصله از پایین */
-                right:400px;  /* فاصله از راست */
-                width:300px;
-                height:290px;
-                background:#fff;
-                border:1px solid #ccc;
-                border-radius:5px;
-                padding:5px;
-                box-shadow:0 0 5px rgba(0,0,0,0.2);
-                z-index:9999;
-                display:flex;
-                flex-direction:column;
-                font-family:Tahoma,sans-serif;
-                font-size:12px;
-                overflow:hidden;
+            #miniUploader {
+                position: fixed; /* ثابت روی صفحه */
+                bottom: 10px; /* فاصله از پایین */
+                right: 400px; /* فاصله از راست */
+                width: 300px;
+                height: 290px;
+                background: #fff;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+                z-index: 9999;
+                display: flex;
+                flex-direction: column;
+                font-family: Tahoma, sans-serif;
+                font-size: 12px;
+                overflow: hidden;
             }
 
-            #miniUploader .preview-zone{
-                flex:1;
-                border:1px dashed #ccc;
-                margin-bottom:3px;
-                overflow-x:auto;
-                display:flex;
-                flex-wrap:wrap;
-                gap:2px;
-                min-height:50px;
+            #miniUploader .preview-zone {
+                flex: 1;
+                border: 1px dashed #ccc;
+                margin-bottom: 3px;
+                overflow-x: auto;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 2px;
+                min-height: 50px;
             }
 
-            #miniUploader .preview-zone.empty .preview-placeholder{
-                display:block;
-                font-size:10px;
-                color:#999;
+            #miniUploader .preview-zone.empty .preview-placeholder {
+                display: block;
+                font-size: 10px;
+                color: #999;
             }
 
-            #miniUploader .preview-list .preview-item{
-                width:30px;
-                height:30px;
-                position:relative;
+            #miniUploader .preview-list .preview-item {
+                width: 30px;
+                height: 30px;
+                position: relative;
             }
 
-            #miniUploader .preview-item img{
-                width:100%;
-                height:100%;
-                object-fit:cover;
+            #miniUploader .preview-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
             }
 
-            #miniUploader .remove-btn{
-                position:absolute;
-                top:0;
-                left:0;
-                width:14px;
-                height:14px;
-                font-size:10px;
-                background:rgba(200,0,0,0.8);
-                color:#fff;
-                border:none;
-                border-radius:50%;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                cursor:pointer;
+            #miniUploader .remove-btn {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 14px;
+                height: 14px;
+                font-size: 10px;
+                background: rgba(200, 0, 0, 0.8);
+                color: #fff;
+                border: none;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
             }
 
-            #miniUploader textarea{
-                width:100%;
-                height:30px;
-                resize:none;
-                font-size:12px;
-                margin-bottom:3px;
+            #miniUploader textarea {
+                width: 100%;
+                height: 30px;
+                resize: none;
+                font-size: 12px;
+                margin-bottom: 3px;
             }
 
-            #miniUploader .btn{
-                width:100%;
-                padding:2px;
-                font-size:12px;
-                border-radius:3px;
+            #miniUploader .btn {
+                width: 100%;
+                padding: 2px;
+                font-size: 12px;
+                border-radius: 3px;
             }
 
-            #miniUploader .btn-primary{
-                background:#0d6efd;
-                color:#fff;
+            #miniUploader .btn-primary {
+                color: #fff;
             }
 
-            #miniUploader .btn-primary:disabled{
-                opacity:0.6;
-                cursor:not-allowed;
+            #miniUploader .btn-primary:disabled {
+                cursor: not-allowed;
+            }
+
+            #miniHeader {
+                background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            }
+
+            #miniHeader {
+                background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+                height: 54px;
+                .chat-title{
+                    color: #fff;
+                    font-size: 11pt;
+                }
+            }
+
+            #submitBtn {
+                position: absolute;
+                bottom: 0;
+                background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)!important;
+            }
+            #description{
+                width: 97%!important;
+                padding: 10px 14px;
+                border-radius: 10px;
+                font-size: 13px;
+                margin: 5px;
+                background: #f8fafc;
+                box-shadow: 0 0 0 1px #e2e8f0;
+                transition: box-shadow 0.2s;
+                height: 100px!important;
+                position: absolute;
+                bottom: 30px;
+            }
+            #previewZone{
+                width: 97%!important;
+                padding: 10px 14px;
+                border-radius: 10px;
+                font-size: 13px;
+                margin: 5px;
+                background: #f8fafc;
+                box-shadow: 0 0 0 1px #e2e8f0;
+                transition: box-shadow 0.2s;
+                height: 80px!important;
+                position: absolute;
+                bottom: 140px;
+            }
+            #miniHeaderText{
+                margin-right: 10px;
+                font-size: 14px;
+                font-weight: bold;
+                color: #fff;
             }
         </style>
 
@@ -101,7 +149,18 @@
     <body>
     <div id="miniUploader">
         <div id="miniHeader" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-            <button type="button" class="p-1" id="miniToggle" style="font-size:11px;">−</button>
+            <button type="button" class="p-1 ms-3" id="miniToggle" style="background: rgba(255,255,255,0.25);
+           border:none;
+           color:white;
+           width:28px;
+           height:28px;
+           border-radius:8px;
+           cursor:pointer;">
+                −
+            </button>
+            <p id="miniHeaderText">
+                ارسال عکس
+            </p>
         </div>
         <form id="testForm">
             <div class="form-group" style="display:none">
@@ -110,14 +169,15 @@
             </div>
 
             <div class="form-group">
-                <div id="previewZone" class="preview-zone empty" tabindex="0" aria-live="polite">
+                    <div id="previewZone" class="preview-zone empty" tabindex="0" aria-live="polite">
                     <div class="preview-placeholder">Ctrl+V برای افزودن عکس</div>
                     <div class="preview-list" id="previewList"></div>
                 </div>
             </div>
 
             <div class="form-group">
-                <textarea id="description" name="description" placeholder="توضیحات..." style="width:100%;height:40px;"></textarea>
+                <textarea id="description" name="description" placeholder="توضیحات..."
+                          style="width:100%;height:40px;"></textarea>
             </div>
 
             <button type="submit" id="submitBtn" class="btn btn-primary" disabled>آپلود</button>
@@ -131,17 +191,20 @@
         const miniUploader = document.getElementById('miniUploader');
         const miniToggle = document.getElementById('miniToggle');
         const formElement = document.getElementById('testForm');
+        const miniHeaderText = document.getElementById('miniHeaderText');
 
         let minimized = localStorage.getItem('miniUploader_minimized') === 'true';
 
         function applyState() {
             if (minimized) {
                 formElement.style.display = 'none';
-                miniUploader.style.height = '30px';
-                miniUploader.style.width = '30px';
+                miniHeaderText.style.display = 'none';
+                miniUploader.style.height = '55px';
+                miniUploader.style.width = '55px';
                 miniToggle.textContent = '+';
             } else {
                 formElement.style.display = 'block';
+                miniHeaderText.style.display = 'block';
                 miniUploader.style.height = '290px';
                 miniUploader.style.width = '300px';
                 miniToggle.textContent = '−';

@@ -158,7 +158,7 @@
         color: #fff;
     }
 
- .dash-badge-amber {
+    .dash-badge-amber {
         background: #fef3c7;
         color: #92400e;
         padding: 0.25rem 0.5rem;
@@ -255,7 +255,8 @@
      $user = Auth::user()
 @endphp
 
-<div class="dash-box-pending float-left ml-1 mt-2 {{$user->role == 'buyer' ? 'w-[35%]' : ' w-[30%]'}} max-h overflow-auto">
+<div
+    class="dash-box-pending float-left ml-1 mt-2 {{$user->role == 'buyer' ? 'w-[38%]' : ' w-[30%]'}} max-h overflow-auto">
     <div class="dash-header sticky top-0 z-10">منتظر بررسی</div>
     <ul class="p-2" style="list-style: none; margin: 0;">
         @foreach($answersGrouped as $groupId => $groupAnswers)
@@ -273,24 +274,24 @@
                         </button>
                     @endif
                     <img src="{{ $firstAnswer->message->user->profile_image_path }}" class="dash-avatar" alt="">
-                        <div class="">
-                            <button onclick="copyGroupCodes('{{ $groupId }}', this)"
-                                    class="dash-btn-icon green copy-btn" title="کپی کلی">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     viewBox="0 0 24 24">
-                                    <path
-                                        d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
-                                </svg>
-                            </button>
-                            <button onclick="copyOnlyCodes('{{ $groupId }}', this)" class="dash-btn-icon green copy-btn"
-                                    title="کپی کد ها">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     viewBox="0 0 24 24">
-                                    <path
-                                        d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
-                                </svg>
-                            </button>
-                        </div>
+                    <div class="">
+                        <button onclick="copyGroupCodes('{{ $groupId }}', this)"
+                                class="dash-btn-icon green copy-btn" title="کپی کلی">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path
+                                    d="M16 1H4a2 2 0 0 0-2 2v12h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/>
+                            </svg>
+                        </button>
+                        <button onclick="copyOnlyCodes('{{ $groupId }}', this)" class="dash-btn-icon green copy-btn"
+                                title="کپی کد ها">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path
+                                    d="M19 5H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"></path>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="dash-group-actions">
                         <button wire:click="deleteGroup('{{ $groupId }}')" class="dash-btn-icon" title="حذف گروه">
                             <span wire:loading.remove wire:target="deleteGroup('{{ $groupId }}')" class="send-arrow">
@@ -309,14 +310,17 @@
                     @foreach($groupAnswers as $answer)
                         <div class="dash-answer-item" wire:key="answer-{{ $answer->id }}">
                             <img src="{{ $answer->message->image_url }}" alt="" class="gallery-img">
-                            <button wire:click="messageBack('{{ $answer->message_id }}')" class="dash-btn-icon red middle" title="برگشت">
-                            <span wire:loading.remove wire:target="messageBack('{{ $answer->message_id }}')" class="send-arrow">
+                            <button wire:click="messageBack('{{ $answer->message_id }}')"
+                                    class="dash-btn-icon red middle" title="برگشت">
+                            <span wire:loading.remove wire:target="messageBack('{{ $answer->message_id }}')"
+                                  class="send-arrow">
                                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none"
                                       stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                       stroke-linejoin="round"><path d="M20 12H4M10 6l-6 6 6 6"/></svg>
                             </span>
 
-                                <span wire:loading wire:target="messageBack('{{ $answer->message_id }}')" style="font-size:12px;">...</span>
+                                <span wire:loading wire:target="messageBack('{{ $answer->message_id }}')"
+                                      style="font-size:12px;">...</span>
                             </button>
                             <p onclick="copyText(this)" class=" group-code mr-1 group-{{ $groupId }} dash-code-tag"
                                data-price="{{ $answer->price }}">{{ trim(explode(':', $answer->message->code)[0]) }}</p>

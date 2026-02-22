@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('final_price')->nullable();
             $table->boolean('needs_follow_up')->default(false)->index();
             $table->timestamps();
+            $table->timestamp('update_time')->nullable();
         });
     }
 

@@ -13,6 +13,7 @@ Route::get('/test-admin-broadcast', function () {
 });
 
 Route::get('/circles', \App\Livewire\Home\CirclePage::class)->name('circles');
+Route::get('/follows', \App\Livewire\Home\FollowUpPage::class)->name('follows');
 
 Route::get('/submit', \App\Livewire\Admin\Support\Index::class);
 // Login

@@ -38,7 +38,7 @@
     }
 
     .dash-box-done .dash-card:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 6px rgba(5, 150, 105, .5);
     }
 
     .dash-box-done .dash-row {

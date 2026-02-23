@@ -251,8 +251,8 @@
              style="left: 25px; top: -14.9167px; background-color: rgb(153, 153, 153); transform: scale(2.65152);"></div>
     </div>
     <div id="chat-header">
-        <span class="chat-title">ارسال پیام</span>
         <div class="chat-header-links">
+            <a href="/follows">پیگیری ها</a>
             <a href="/circles">دایره ها</a>
             <a href="/view-user-chats">پیام های کاربران</a>
             <a href="/login">ورود</a>

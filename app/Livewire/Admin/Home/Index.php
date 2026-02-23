@@ -822,27 +822,29 @@ class Index extends Component
         $user = Auth::user();
         $this->checkAccess($user->id);
 
-        $message = Message::where('group_id', $groupId)->first();
+        $messages = Message::where('group_id', $groupId)->get();
 
-        if (!$message) {
-            return;
-        }
 
-        if ($message->needs_follow_up) {
-            // 🔴 خاموش کردن پیگیری → برگردوندن زمان قبلی
-            Message::withoutTimestamps(function () use ($message) {
-                $message->update([
-                    'needs_follow_up' => false,
-                    'updated_at' => $message->previous_updated_at, // برگرد به جای قبلی
-                    'previous_updated_at' => null,
-                ]);
-            });
+        foreach ($messages as $message) {
+            if (!$message) {
+                return;
+            }
+            if ($message->needs_follow_up) {
+                // 🔴 خاموش کردن پیگیری → برگردوندن زمان قبلی
+                Message::withoutTimestamps(function () use ($message) {
+                    $message->update([
+                        'needs_follow_up' => false,
+                        'updated_at' => $message->previous_updated_at, // برگرد به جای قبلی
+                        'previous_updated_at' => null,
+                    ]);
+                });
 
-        } else {
-            // 🟢 روشن کردن پیگیری → ذخیره زمان قبلی + بیاد بالا
-            $message->previous_updated_at = $message->updated_at;
-            $message->needs_follow_up = true;
-            $message->save(); // اینجا عمداً updated_at جدید می‌گیره
+            } else {
+                // 🟢 روشن کردن پیگیری → ذخیره زمان قبلی + بیاد بالا
+                $message->previous_updated_at = $message->updated_at;
+                $message->needs_follow_up = true;
+                $message->save(); // اینجا عمداً updated_at جدید می‌گیره
+            }
         }
     }
 
@@ -872,7 +874,7 @@ class Index extends Component
             ->sortByDesc('updated_at')
             ->groupBy('group_id');
 
-        $wait_for_price = Message::with(['answers','user'])
+        $wait_for_price = Message::with(['answers', 'user'])
             ->where('chat_in_progress', '3')
             ->orderByDesc('updated_at')
             ->get();
@@ -899,7 +901,7 @@ class Index extends Component
         $this->messageTimesByCode = Message::select('code', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function($item) {
+            ->map(function ($item) {
                 $mainCode = explode(':', $item->code)[0]; // گرفتن mainCode
                 $item->main_code = $mainCode;
                 return $item;
@@ -915,7 +917,7 @@ class Index extends Component
             })
             ->toArray();
 
-        $codes = Message::pluck('code')->map(function($code){
+        $codes = Message::pluck('code')->map(function ($code) {
             return explode(':', $code)[0];
         })->toArray();
 
@@ -932,7 +934,6 @@ class Index extends Component
                 ];
             })
             ->toArray();
-
 
 
         return view('livewire.admin.home.index', compact(

@@ -20,7 +20,7 @@ class Index extends Component
 {
     use WithFileUploads;
 
-    public $uploadedImage; // برای ذخیره موقت فایل
+    public $uploadedImage;
 
     // chat_in_progress
     // ENDED = 0;
@@ -44,7 +44,6 @@ class Index extends Component
 
     public $c_s_minimized = false;
 
-    // 🔹 آرایه جدید برای کامنت‌ها
     public array $comments = [];
 
     protected $rules = [
@@ -59,12 +58,6 @@ class Index extends Component
     ];
 
     public $existingCodes = [];
-
-//    protected $listeners = [
-//        'toggleCode' => 'toggleCode',
-//        'codeAnswerDirect' => 'code_answer',
-//        'codeAnswerWithComment' => 'codeAnswerWithComment', // متد جدید
-//    ];
 
     protected $listeners = [
         'checkNewMessages' => '$refresh',
@@ -85,27 +78,8 @@ class Index extends Component
         }
     }
 
-    public function handlePasteWithText($data)
-    {
-        if (!empty($data['image'])) {
-            $imageData = $data['image'];
-            $image = str_replace('data:image/png;base64,', '', $imageData);
-            $image = str_replace(' ', '+', $image);
-            $fileName = 'images/' . uniqid() . '.png';
-            \Storage::disk('public')->put($fileName, base64_decode($image));
-
-            // حالا path رو تو دیتابیس ذخیره کن
-            MyModel::create([
-                'text' => $data['text'],
-                'image_path' => $fileName
-            ]);
-        }
-    }
-
-
     function hasMoreThanThreePersianLetters($string)
     {
-        // پیدا کردن همه حروف فارسی
         preg_match_all('/[\x{0600}-\x{06FF}]/u', $string, $matches);
 
         return count($matches[0]) > 3;
@@ -126,7 +100,6 @@ class Index extends Component
             abort(403);
         }
 
-        // محاسبه تعداد تکرار هر کد در دیتابیس
         $repeatedCodes = \App\Models\Message::pluck('code')->toArray();
 
         $this->messageCounts = array_count_values($repeatedCodes);
@@ -154,17 +127,14 @@ class Index extends Component
             'moshtaryg' => 'مشتری جدید',
         ];
 
-        // اگر یکی از چک‌باکس‌ها تغییر کرد
         if (array_key_exists($propertyName, $map)) {
 
-            // اول همه رو خاموش کن (که فقط یکی انتخاب بشه)
             foreach ($map as $key => $label) {
                 if ($key !== $propertyName) {
                     $this->$key = false;
                 }
             }
 
-            // اگر تیک خورد → مقدار بذار
             if ($this->$propertyName) {
                 $this->buyer_name = $map[$propertyName];
             } else {
@@ -188,7 +158,6 @@ class Index extends Component
             return trim($line) !== '';
         });
 
-        // اگه بعد از فیلتر چیزی نموند، کلاً ثبت نکن
         if (count($lines) === 0) {
             return;
         }
@@ -207,16 +176,16 @@ class Index extends Component
             } else {
                 $value = '0';
             }
-            $parts = preg_split('/\s+/', trim($line)); // جدا کردن با هر تعداد فاصله
+            $parts = preg_split('/\s+/', trim($line));
             if ($check == '1') {
-                $codePart = $parts[0]; // همون کد
+                $codePart = $parts[0];
             } else {
                 $codePart = trim($line);
             }
 
-            $priceParts = array_slice($parts, 1); // همه چیز بعد از کد
+            $priceParts = array_slice($parts, 1);
 
-            $price = implode('-', $priceParts); // چسبوندن با خط تیره
+            $price = implode('-', $priceParts);
             $messageCode = explode(' ', $line);
             $message = Message::create([
                 'user_id' => $user->id,
@@ -232,7 +201,7 @@ class Index extends Component
 
             if ($check == 1 && empty($priceParts)) {
                 $message->delete();
-                continue; // بره خط بعدی
+                continue;
             }
 
             if ($this->checkbox == true) {
@@ -282,63 +251,12 @@ class Index extends Component
                 'active_group' => '0',
             ]
         );
-//        $this->comments[$message_id] = null;
 
-        // 👇 خیلی مهم
         unset($this->comments[$message_id]);
 
-        // برای اطمینان بیشتر
         $this->resetValidation();
 
     }
-
-//    public
-//    function submit_answer($id)
-//    {
-//        $user = Auth::user();
-//        $this->checkAccess($user->id);
-//        $this->validate();
-//
-//        $a = Answer::query()->where('message_id', $id)->get();
-//
-//        $b = Message::query()->where('id', $id)->get();
-//        foreach ($b as $c) {
-//            $name = User::query()->where('id', $c->user_id)->first();
-//        }
-//
-//        if ($a->isEmpty()) {
-//            Answer::query()->create([
-//                'user_id' => $user->id,
-//                'message_id' => $id,
-//                'price' => $this->prices[$id] ?? null,
-//                'respondent_by_code' => '',
-//            ]);
-//
-//            Message::query()->where('id', $id)
-//                ->update([
-//                    'chat_in_progress' => '1',
-//                    'active_group' => '0',
-//                    'past_chat_progress' => '2',
-//                ]);
-//
-//            $this->prices = [];
-//        } else {
-//
-//            Answer::query()->where('message_id', $id)->update([
-//                'price' => $this->prices[$id] ?? null,
-//                'respondent_by_code' => '0',
-//            ]);
-//
-//            Message::query()->where('id', $id)
-//                ->update([
-//                    'chat_in_progress' => '1',
-//                    'past_chat_progress' => '2',
-//                    'active_group' => '0']);
-//
-//            $this->prices = [];
-//        }
-//        $this->dispatch('answer-submitted', message: " پاسخ کاربر $name->name ثبت شد! ");
-//    }
 
     #[On('submitPriceDirect')]
     public function submitPriceDirect($id, $price)
@@ -371,47 +289,6 @@ class Index extends Component
         ]);
 
     }
-
-
-//    public
-//    function submit_answer_on3($id)
-//    {
-//        $user = Auth::user();
-//        $this->validate();
-//        $this->checkAccess($user->id);
-//
-//        $a = Answer::query()->where('message_id', $id)->get();
-//
-//        if ($a->isEmpty()) {
-//            Answer::query()->create([
-//                'user_id' => $user->id,
-//                'message_id' => $id,
-//                'price' => $this->prices[$id] ?? null,
-//                'respondent_by_code' => '0',
-//            ]);
-//
-//            Message::query()->where('id', $id)
-//                ->update([
-//                    'chat_in_progress' => '1',
-//                    'past_chat_progress' => '3',
-//                    'active_group' => '0']);
-//
-//            $this->prices = [];
-//        } else {
-//            Answer::query()->where('message_id', $id)->update([
-//                'price' => $this->prices[$id] ?? null,
-//                'respondent_by_code' => '0',
-//            ]);
-//
-//            Message::query()->where('id', $id)
-//                ->update([
-//                    'chat_in_progress' => '1',
-//                    'past_chat_progress' => '3',
-//                    'active_group' => '0']);
-//
-//            $this->prices = [];
-//        }
-//    }
 
     #[On('submitAnswerOn3Direct')]
     public function submitAnswerOn3Direct($id, $price)
@@ -456,7 +333,6 @@ class Index extends Component
         $user = Auth::user();
         $this->checkAccess($user->id);
 
-        // فقط کدهای مربوط به همین پیام
         $codes = [];
 
         foreach ($this->selectedCodes as $item) {
@@ -490,7 +366,6 @@ class Index extends Component
                 'past_chat_progress' => '2',
                 'active_group' => '1']);
 
-        // پاک کردن انتخاب‌ها و کامنت
         $this->selectedCodes = [];
         $this->comments[$messageId] = null;
         $this->dispatch('answer-submitted', message: "پاسخ کاربر $user->name ثبت شد! ");
@@ -511,14 +386,12 @@ class Index extends Component
     }
 
 
-    // 🔹 متد جدید برای ذخیره دکمه + کامنت
     public
     function codeAnswerWithComment($chat_code, $messageId)
     {
         $user = Auth::user();
         $this->checkAccess($user->id);
 
-        // بررسی اینکه فقط وقتی کد حروف است، کامنت ثبت شود
         $comment = null;
         if (!is_numeric($chat_code)) {
             $comment = $this->comments[$messageId] ?? null;
@@ -540,7 +413,6 @@ class Index extends Component
                 'past_chat_progress' => '2',
                 'active_group' => '1']);
 
-        // پاک کردن input کامنت فقط وقتی ثبت شد
         if ($comment) {
             $this->comments[$messageId] = null;
         }
@@ -548,7 +420,6 @@ class Index extends Component
     }
 
 
-    // بقیه متدها همونطوری که بود
     public
     function save_for_ad_price($messageId)
     {
@@ -721,7 +592,7 @@ class Index extends Component
                 [
                     'user_id' => $user->id,
                     'price' => $price,
-                    'respondent_by_code' => 0, // چون دستی وارد شده
+                    'respondent_by_code' => 0,
                 ]
             );
 
@@ -780,7 +651,6 @@ class Index extends Component
 
         $imagePath = null;
 
-        // 🔹 تبدیل Base64 به فایل
         if ($base64Image) {
             preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type);
 
@@ -795,7 +665,6 @@ class Index extends Component
             $imagePath = "chat-images/$fileName";
         }
 
-        // اگر نه متن بود نه عکس → هیچ کاری نکن
         if (!$text && !$imagePath) {
             return;
         }
@@ -813,7 +682,7 @@ class Index extends Component
             'past_chat_progress' => '2',
         ]);
 
-        $this->test = ''; // خالی شدن textarea
+        $this->test = '';
     }
 
     public
@@ -830,20 +699,18 @@ class Index extends Component
                 return;
             }
             if ($message->needs_follow_up) {
-                // 🔴 خاموش کردن پیگیری → برگردوندن زمان قبلی
                 Message::withoutTimestamps(function () use ($message) {
                     $message->update([
                         'needs_follow_up' => false,
-                        'updated_at' => $message->previous_updated_at, // برگرد به جای قبلی
+                        'updated_at' => $message->previous_updated_at,
                         'previous_updated_at' => null,
                     ]);
                 });
 
             } else {
-                // 🟢 روشن کردن پیگیری → ذخیره زمان قبلی + بیاد بالا
                 $message->previous_updated_at = $message->updated_at;
                 $message->needs_follow_up = true;
-                $message->save(); // اینجا عمداً updated_at جدید می‌گیره
+                $message->save();
             }
         }
     }
@@ -852,7 +719,7 @@ class Index extends Component
     {
         $message = Message::find($message_id);
 
-        $message->timestamps = false; // غیرفعال کردن موقت timestamps
+        $message->timestamps = false;
 
         $message->update([
             'is_circle' => !$message->is_circle,
@@ -902,7 +769,7 @@ class Index extends Component
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($item) {
-                $mainCode = explode(':', $item->code)[0]; // گرفتن mainCode
+                $mainCode = explode(':', $item->code)[0];
                 $item->main_code = $mainCode;
                 return $item;
             })

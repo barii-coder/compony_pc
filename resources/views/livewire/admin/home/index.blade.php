@@ -54,10 +54,12 @@
         <x-admin.dashboard.soraat-forms-box :productsGrouped="$productsGrouped"/>
     @endif
 
-    {{-- فرم ارسال پیام --}}
+{{--     فرم ارسال پیام --}}
     <x-admin.dashboard.chat-submit-form/>
 
     <livewire:test-form wire:ignore/>
+
+{{--    <livewire:admin.home.chat-form />--}}
 
     <script>
 

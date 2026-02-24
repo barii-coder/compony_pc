@@ -190,7 +190,7 @@
     }
 
     .dash-box-chats .dash-buyer-tag {
-        font-size: 11px;
+        font-size: 15px;
         color: #64748b;
         margin-right: 0.5rem;
     }
@@ -286,6 +286,10 @@
     .dash-box-chats .dash-msg-body {
         margin-right: 0;
     }
+
+    .message-code {
+        font-size: 11pt;
+    }
 </style>
 @php
     use Illuminate\Support\Facades\Auth;
@@ -345,7 +349,6 @@
                         @php
                             $isEmpty = preg_match('/:\s*-\s*$/', trim($message->code));
                             $hasNoColon = strpos($message->code, ':') === false;
-//                            $count = $messageCounts[$message->code] ?? 0;
                             $hasPrice = !$hasNoColon && !$isEmpty;
                             $parts = explode(':', $message->code);
                             $mainCode = trim($parts[0]);
@@ -355,7 +358,7 @@
                         <li id="message-{{ $message->id }}" class="dash-msg-item" wire:key="message-{{ $message->id }}">
                             <img src="{{ $message->image_url }}" alt="" class="gallery-img" style="border-radius: 6px;">
                             <p onclick="copyText(this)"
-                               class="chat-code chat-group-{{ $groupId }} dash-code-line inline-block">{{ trim($parts[0]) }}</p>
+                               class="chat-code chat-group-{{ $groupId }} dash-code-line inline-block message-code">{{ trim($parts[0]) }}</p>
                             @if(isset($parts[1]) && trim($parts[1]) !== '' && trim($parts[1]) != '-')
                                 : <p onclick="copyText(this)"
                                      class="chat-code  chat-group-{{ $groupId }} dash-code-line inline-block"
@@ -389,11 +392,6 @@
                                            wire:keydown.enter="submit_comment({{ $message->id }})"
                                            placeholder="کامنت" class="dash-comment-input">
                                     <div class="dash-input-wrap">
-                                        {{--                                        @if(isset($parts[1]) && trim($parts[1]) !== '')--}}
-                                        {{--                                            @php--}}
-                                        {{--                                            $inputPricevalue = trim($parts[1]);--}}
-                                        {{--                                            @endphp--}}
-                                        {{--                                        @endif--}}
                                         <input
                                             type="text"
                                             value="{{ isset($setedValue) ? $setedValue : '' }}"
@@ -421,8 +419,9 @@
                             </div>
 
                             @if($count > 1)
-                                {{$times[0] = ''}}
-                                <span class="dash-time-badge">( {{ implode(' ، ', $times) }} )</span>
+                                <span class="dash-time-badge">
+                                    ( {{ implode(' ، ', array_slice($times, 1)) }} )
+                                </span>
                             @endif
 
                             @if($isEmpty == 1 || $hasNoColon == true)
@@ -472,8 +471,6 @@
     </ul>
 
     <script>
-
-
         function copyFullGroup(groupId, btn) {
 
             const messageItems = document.querySelectorAll('#message-' + groupId + ' .dash-msg-item, .dash-card .chat-group-' + groupId);
@@ -592,6 +589,4 @@
             }
         }
     </script>
-
-
 </div>

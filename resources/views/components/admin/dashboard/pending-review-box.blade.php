@@ -45,6 +45,12 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
         border: 1px solid #e5e7eb;
         overflow: hidden;
+        transition: .2s;
+    }
+
+    .dash-box-pending .dash-group-card:hover {
+        box-shadow: 0 3px 11px rgba(61,135,255, .7);
+        transition: .2s;
     }
 
     .dash-box-pending .dash-group-head {
@@ -339,7 +345,7 @@
                             @elseif($answer->comment && $answer->price != null)
                                 <span class="dash-badge-amber middle inline-block ml-2">{{ $answer->comment }}</span>
                             @endif
-                            @if($answer->price != 'x' && $answer->price != 'L')
+                            @if($answer->price != 'X' && $answer->price != 'L')
                                 @if($answer->respondent_by_code == 1)
                                     @if($answer->price != null)
                                         <span class="dash-badge ml-1 dash-badge-blue middle">{{ $answer->price }}</span>
@@ -383,7 +389,7 @@
                                 </div>
                             @elseif($answer->respondent_by_code && !$answer->respondent_id)
                                 <div class="float-right">
-                                    @if($answer->price == 'x')
+                                    @if($answer->price == 'X')
                                         <span class="dash-btn-action red">محصول نا موجود</span>
                                     @elseif($answer->price === 'n')
                                         <span class="dash-btn-action red">خوب نیست</span>

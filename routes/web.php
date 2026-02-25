@@ -5,11 +5,29 @@ use App\Http\Controllers\AuthController;
 use \App\Livewire\Admin\Home\Index;
 
 Route::get('/', Index::class)->name('home');
+
 Route::get('/forkhepeli', \App\Livewire\Testlove::class)->name('forkhepeli');
 
-Route::get('/test-admin-broadcast', function () {
-    event(new \App\Events\AdminNotificationEvent('تست alert ⚡'));
-    return 'sent';
+use App\Events\NewNotification;
+
+Route::get('/notification-test', function () {
+    return view('notification-test');
+});
+
+Route::get('/send-test', function () {
+
+    $pusher = new \Pusher\Pusher(
+        config('broadcasting.connections.pusher.key'),
+        config('broadcasting.connections.pusher.secret'),
+        config('broadcasting.connections.pusher.app_id'),
+        config('broadcasting.connections.pusher.options')
+    );
+
+    $pusher->trigger('notifications', 'new.notification', [
+        'message' => 'تست مستقیم Pusher از Laravel'
+    ]);
+
+    return 'ارسال شد';
 });
 
 Route::get('/circles', \App\Livewire\Home\CirclePage::class)->name('circles');
@@ -27,7 +45,7 @@ Route::get('/register', fn() => view('register'))->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
 // Dashboard
-Route::get('/dashboard', Index::class)->middleware('auth');
+Route::get('/dashboard', Index::class)->middleware('auth')->name('dashboard');
 
 // daii
 

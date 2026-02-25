@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Home;
 
+use App\Events\NewNotificationForAdmins;
 use App\Models\Answer;
 use App\Models\Message;
 use App\Models\User;
@@ -220,6 +221,11 @@ class Index extends Component
         $this->reset();
         $this->checkbox = false;
         $this->isSubmitting = false;
+
+        broadcast(new NewNotificationForAdmins(
+            'یک پیام جدید از ' . $user->name . ' ارسال شد 🚀'
+        ));
+//        broadcast(new NewNotificationForAdmins('یک پیام جدید از ' . $user->name . ' ارسال شد 🚀'));
     }
 
     public function submit_comment($message_id)

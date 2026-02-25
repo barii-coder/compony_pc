@@ -63,6 +63,14 @@
 
     <script>
 
+
+        window.Echo.private('notifications.admins')
+            .listen('.new.notification', (e) => {
+                console.log('✅ نوتیف جدید برای admin:', e.message);
+                alert(e.message);
+            });
+
+
         function showToast(message) {
             alert(message) // اینجا Toast حرفه‌ای بذار
         }
